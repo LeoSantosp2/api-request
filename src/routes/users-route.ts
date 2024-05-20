@@ -7,5 +7,6 @@ const router = Router();
 router.get('/', usersController.index);
 router.get('/:id', usersController.show);
 router.post('/', usersController.store);
+router.put('/:id', usersController.update);
 
 export default router;
