@@ -97,6 +97,58 @@ class UsersController {
       }
     }
   }
+
+  async update(req: Request, res: Response) {
+    try {
+      const user = await knex('users')
+        .select('*')
+        .where('id', '=', req.params.id);
+
+      if (user.length === 0) {
+        return res.status(400).json({
+          error: 'Usuário não existe.',
+        });
+      }
+
+      if (
+        user[0].first_name !== req.body.firstName &&
+        user[0].last_name !== req.body.lastName
+      ) {
+        await knex('users')
+          .update({
+            first_name: req.body.firstName,
+            last_name: req.body.lastName,
+          })
+          .where('id', '=', req.params.id);
+
+        return res.json('Nome e Sobrenome alterado com sucesso.');
+      }
+
+      if (user[0].first_name !== req.body.firstName) {
+        await knex('users')
+          .update({ first_name: req.body.firstName })
+          .where('id', '=', req.params.id);
+
+        return res.json('Nome alterado com sucesso.');
+      }
+
+      if (user[0].last_name !== req.body.lastName) {
+        await knex('users')
+          .update({ last_name: req.body.lastName })
+          .where('id', '=', req.params.id);
+
+        return res.json('Sobrenome alterado com sucesso.');
+      }
+
+      return res.json('Nenhuma alteração efetuada.');
+    } catch (err) {
+      if (err instanceof Error) {
+        return res.status(400).json({
+          error: err.message,
+        });
+      }
+    }
+  }
 }
 
 export default new UsersController();
