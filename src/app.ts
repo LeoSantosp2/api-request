@@ -1,11 +1,12 @@
 import express from 'express';
-import dotenv from 'dotenv';
+import 'dotenv/config';
+
+import usersRouter from './routes/users-route';
 
 class App {
   public app: express.Application;
 
   constructor() {
-    dotenv.config();
     this.app = express();
     this.middlewares();
     this.routes();
@@ -16,7 +17,9 @@ class App {
     this.app.use(express.json());
   }
 
-  routes() {}
+  routes() {
+    this.app.use('/users', usersRouter);
+  }
 }
 
 export default new App().app;
