@@ -6,6 +6,8 @@ const envSchema = z.object({
   DATABASE_PORT: z.string(),
   DATABASE_USERNAME: z.string(),
   DATABASE_PASSWORD: z.string(),
+  TOKEN_SECRET: z.string(),
+  TOKEN_EXPIRATION: z.string(),
   PORT: z.string(),
 });
 
