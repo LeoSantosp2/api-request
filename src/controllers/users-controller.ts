@@ -16,6 +16,22 @@ class UsersController {
       }
     }
   }
+
+  async show(req: Request, res: Response) {
+    try {
+      const response = await knex('users')
+        .select('*')
+        .where('id', req.params.id);
+
+      return res.json(response);
+    } catch (err) {
+      if (err instanceof Error) {
+        return res.status(400).json({
+          error: err.message,
+        });
+      }
+    }
+  }
 }
 
 export default new UsersController();
