@@ -149,6 +149,30 @@ class UsersController {
       }
     }
   }
+
+  async delete(req: Request, res: Response) {
+    try {
+      const user = await knex('users')
+        .select('*')
+        .where('id', '=', req.params.id);
+
+      if (user.length === 0) {
+        return res.status(400).json({
+          error: 'Usuário não existe.',
+        });
+      }
+
+      await knex('users').delete().where('id', '=', req.params.id);
+
+      return res.json('Usuário excluido com sucesso.');
+    } catch (err) {
+      if (err instanceof Error) {
+        return res.status(400).json({
+          error: err.message,
+        });
+      }
+    }
+  }
 }
 
 export default new UsersController();
