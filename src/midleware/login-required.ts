@@ -11,25 +11,26 @@ export const loginRequired = async (
 
   if (!token) {
     return res.status(401).json({
-      errors: ['Necessário fazer login.'],
+      error: 'Necessário fazer login.',
     });
   }
 
   try {
     const user = await knex('users')
       .select('token_id')
-      .where('token_id', '=', token);
+      .where('token_id', '=', token)
+      .first();
 
-    if (user.length === 0) {
+    if (!user) {
       return res.status(401).json({
-        errors: ['Usuário inválido.'],
+        error: 'Usuário inválido.',
       });
     }
 
     return next();
   } catch (err) {
     return res.status(401).json({
-      errors: ['Token expirado ou inválido.'],
+      error: 'Token expirado ou inválido.',
     });
   }
 };
