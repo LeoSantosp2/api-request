@@ -24,9 +24,12 @@ class LoginController {
         });
       }
 
-      const user = await knex('users').select('*').where('email', '=', email);
+      const user = await knex('users')
+        .select('*')
+        .where('email', '=', email)
+        .first();
 
-      if (user.length === 0) {
+      if (!user) {
         return res.status(400).json({
           error: 'Usuário não existe.',
         });
@@ -38,7 +41,7 @@ class LoginController {
         });
       }
 
-      const id = user[0].id;
+      const id = user.id;
 
       const token = jwt.sign({ id, email }, env.TOKEN_SECRET, {
         expiresIn: env.TOKEN_EXPIRATION,
@@ -50,11 +53,7 @@ class LoginController {
 
       return res.json({ id: id, email: email, token: token });
     } catch (err) {
-      if (err instanceof Error) {
-        return res.status(400).json({
-          error: err.message,
-        });
-      }
+      return res.status(400).json({ error: (err as Error).message });
     }
   }
 }

@@ -8,31 +8,23 @@ import knex from '../config/knex';
 class UsersController {
   async index(req: Request, res: Response) {
     try {
-      const response = await knex('users').select('*');
+      const users = await knex('users').select('*');
 
-      return res.json(response);
+      return res.json(users);
     } catch (err) {
-      if (err instanceof Error) {
-        return res.status(400).json({
-          error: err.message,
-        });
-      }
+      return res.status(400).json({ error: (err as Error).message });
     }
   }
 
   async show(req: Request, res: Response) {
     try {
-      const response = await knex('users')
+      const user = await knex('users')
         .select('*')
-        .where('id', req.params.id);
+        .where('id', '=', req.params.id);
 
-      return res.json(response);
+      return res.json(user);
     } catch (err) {
-      if (err instanceof Error) {
-        return res.status(400).json({
-          error: err.message,
-        });
-      }
+      return res.status(400).json({ error: (err as Error).message });
     }
   }
 
@@ -58,9 +50,10 @@ class UsersController {
 
       const emailExists = await knex('users')
         .select('email')
-        .where('email', '=', req.body.email);
+        .where('email', '=', req.body.email)
+        .first();
 
-      if (emailExists.length > 0) {
+      if (emailExists) {
         return res.status(400).json({
           error: 'E-mail já cadastrado.',
         });
@@ -88,13 +81,9 @@ class UsersController {
 
       await knex('users').insert(newUser);
 
-      return res.json('Usuário cadastrado com sucesso.');
+      return res.status(201).json('Usuário cadastrado com sucesso.');
     } catch (err) {
-      if (err instanceof Error) {
-        return res.status(400).json({
-          error: err.message,
-        });
-      }
+      return res.status(400).json({ error: (err as Error).message });
     }
   }
 
@@ -102,17 +91,18 @@ class UsersController {
     try {
       const user = await knex('users')
         .select('*')
-        .where('id', '=', req.params.id);
+        .where('id', '=', req.params.id)
+        .first();
 
-      if (user.length === 0) {
+      if (!user) {
         return res.status(400).json({
           error: 'Usuário não existe.',
         });
       }
 
       if (
-        user[0].first_name !== req.body.firstName &&
-        user[0].last_name !== req.body.lastName
+        user.first_name !== req.body.firstName &&
+        user.last_name !== req.body.lastName
       ) {
         await knex('users')
           .update({
@@ -121,7 +111,7 @@ class UsersController {
           })
           .where('id', '=', req.params.id);
 
-        return res.json('Nome e Sobrenome alterado com sucesso.');
+        return res.json('Nome e Sobrenome alterados com sucesso.');
       }
 
       if (user[0].first_name !== req.body.firstName) {
@@ -142,11 +132,7 @@ class UsersController {
 
       return res.json('Nenhuma alteração efetuada.');
     } catch (err) {
-      if (err instanceof Error) {
-        return res.status(400).json({
-          error: err.message,
-        });
-      }
+      return res.status(400).json({ error: (err as Error).message });
     }
   }
 
@@ -154,9 +140,10 @@ class UsersController {
     try {
       const user = await knex('users')
         .select('*')
-        .where('id', '=', req.params.id);
+        .where('id', '=', req.params.id)
+        .first();
 
-      if (user.length === 0) {
+      if (!user) {
         return res.status(400).json({
           error: 'Usuário não existe.',
         });
@@ -166,11 +153,7 @@ class UsersController {
 
       return res.json('Usuário excluido com sucesso.');
     } catch (err) {
-      if (err instanceof Error) {
-        return res.status(400).json({
-          error: err.message,
-        });
-      }
+      return res.status(400).json({ error: (err as Error).message });
     }
   }
 }
