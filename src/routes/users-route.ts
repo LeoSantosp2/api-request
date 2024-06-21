@@ -2,7 +2,7 @@ import { Router } from 'express';
 
 import usersController from '../controllers/users-controller';
 
-import { loginRequired } from '../midleware/login-required';
+import { loginRequired } from '../middleware/login-required';
 
 const router = Router();
 
