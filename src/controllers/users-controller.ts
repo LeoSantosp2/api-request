@@ -1,12 +1,15 @@
 import isEmail from 'validator/lib/isEmail';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { v4 } from 'uuid';
 import { hashSync } from 'bcrypt';
 
 import knex from '../config/knex';
 
+import { RequestBodyProps } from '../interfaces/request-body';
+import { UsersBodyProps } from '../types/users-body-props';
+
 class UsersController {
-  async index(req: Request, res: Response) {
+  async index(req: RequestBodyProps<UsersBodyProps>, res: Response) {
     try {
       const users = await knex('users').select('*');
 
@@ -16,7 +19,7 @@ class UsersController {
     }
   }
 
-  async show(req: Request, res: Response) {
+  async show(req: RequestBodyProps<UsersBodyProps>, res: Response) {
     try {
       const user = await knex('users')
         .select('*')
@@ -28,7 +31,7 @@ class UsersController {
     }
   }
 
-  async store(req: Request, res: Response) {
+  async store(req: RequestBodyProps<UsersBodyProps>, res: Response) {
     try {
       if (
         !req.body.firstName ||
@@ -87,7 +90,7 @@ class UsersController {
     }
   }
 
-  async update(req: Request, res: Response) {
+  async update(req: RequestBodyProps<UsersBodyProps>, res: Response) {
     try {
       const user = await knex('users')
         .select('*')
@@ -136,7 +139,7 @@ class UsersController {
     }
   }
 
-  async delete(req: Request, res: Response) {
+  async delete(req: RequestBodyProps<UsersBodyProps>, res: Response) {
     try {
       const user = await knex('users')
         .select('*')

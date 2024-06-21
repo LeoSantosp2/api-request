@@ -1,14 +1,17 @@
 import isEmail from 'validator/lib/isEmail';
 import jwt from 'jsonwebtoken';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 
 import knex from '../config/knex';
 import env from '../config/env';
 
 import { passwordIsValid } from '../utils/password-is-valid';
 
+import { RequestBodyProps } from '../interfaces/request-body';
+import { LoginBodyProps } from '../types/login-body-props';
+
 class LoginController {
-  async store(req: Request, res: Response) {
+  async store(req: RequestBodyProps<LoginBodyProps>, res: Response) {
     try {
       const { email, password } = req.body;
 
