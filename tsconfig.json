@@ -1,7 +1,10 @@
 {
   "compilerOptions": {
     "target": "ES2016",
-    "lib": ["ESNext", "DOM"],
+    "lib": [
+      "ESNext",
+      "DOM"
+    ],
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "module": "commonjs",
@@ -16,5 +19,7 @@
     "strict": true,
     "skipLibCheck": true
   },
-  "include": ["./src"]
+  "include": [
+    "./src"
+  ]
 }
