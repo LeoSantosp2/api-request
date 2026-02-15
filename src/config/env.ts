@@ -9,6 +9,7 @@ const envSchema = z.object({
   TOKEN_SECRET: z.string(),
   TOKEN_EXPIRATION: z.string(),
   API_PORT: z.string(),
+  DATABASE_URL: z.string(),
 });
 
 export default envSchema.parse(process.env);
