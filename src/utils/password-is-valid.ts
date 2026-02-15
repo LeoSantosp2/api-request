@@ -1,12 +1,11 @@
 import { compareSync } from 'bcrypt';
 
-import knex from '../config/knex';
+import prisma from '../config/prisma';
 
 export const passwordIsValid = async (email: string, password: string) => {
-  const user = await knex('users')
-    .select('password')
-    .where('email', '=', email)
-    .first();
+  const user = await prisma.users.findFirst({ where: { email } });
+
+  if (!user) return;
 
   return compareSync(password, user.password);
 };

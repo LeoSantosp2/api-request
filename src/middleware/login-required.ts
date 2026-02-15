@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 
-import knex from '../config/knex';
+import prisma from '../config/prisma';
+
+import { HttpError } from '../utils/http-error';
 
 export const loginRequired = async (
   req: Request,
@@ -10,27 +12,14 @@ export const loginRequired = async (
   const token = req.headers.authorization;
 
   if (!token) {
-    return res.status(401).json({
-      error: 'Necessário fazer login.',
-    });
+    throw new HttpError(401, 'Necessário fazer login.');
   }
 
-  try {
-    const user = await knex('users')
-      .select('token_id')
-      .where('token_id', '=', token)
-      .first();
+  const user = await prisma.users.findFirst({ where: { token_auth: token } });
 
-    if (!user) {
-      return res.status(401).json({
-        error: 'Usuário inválido.',
-      });
-    }
-
-    return next();
-  } catch (err) {
-    return res.status(401).json({
-      error: 'Token expirado ou inválido.',
-    });
+  if (!user) {
+    throw new HttpError(401, 'Usuário inválido.');
   }
+
+  return next();
 };
