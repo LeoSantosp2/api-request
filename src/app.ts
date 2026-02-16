@@ -1,9 +1,12 @@
 import express from 'express';
+import swaggerUi from 'swagger-ui-express';
 import 'dotenv/config';
 import 'express-async-errors';
 
 import usersRouter from './routes/users-route';
 import loginRouter from './routes/login-route';
+
+import swaggerDocs from './config/swagger';
 
 import { errorHandler } from './middleware/error-handler';
 
@@ -25,6 +28,7 @@ class App {
   routes() {
     this.app.use('/api', usersRouter);
     this.app.use('/api', loginRouter);
+    this.app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
   }
 }
 
