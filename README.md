@@ -1,4 +1,4 @@
-# Api Request
+# API Request
 
 An API example created with NodeJS and TypeScript for a complete CRUD model of users with authentication.
 
