@@ -26,7 +26,7 @@ Api-request is an example of API REST created with NodeJS and TypeScript. This p
 - Express.js
 - Prisma ORM
 - MySQL
-- JWT para autenticação
+- JWT to authentication
 
 ## Features
 - ✅ Complete CRUD of users
