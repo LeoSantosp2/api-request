@@ -48,7 +48,7 @@ class UsersController {
 
     return res.status(200).json({
       status: 'success',
-      message: 'Usuário excluido com sucesso.',
+      message: 'Usuário deletado com sucesso.',
     });
   }
 }
