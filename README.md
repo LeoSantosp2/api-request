@@ -8,6 +8,7 @@ An API example created with NodeJS and TypeScript for a complete CRUD model of u
 - [Requirements](#requirements)
 - [Routes](#routes)
 - [Installation](#installation)
+- [Tests](#tests)
 - [Configuration](#configuration)
 - [Authentication](#authentication)
 - [Execute the Project](#execute-the-project)
@@ -64,42 +65,41 @@ yarn install
 ```
 
 ### 3. Configure the environment variables
-Create a file with name `.env` and write the variables below:
+Copy `.env.example` to `.env` and fill in the values:
 
-```env
-DATABASE=database_name
-DATABASE_HOST=database_host
-DATABASE_PORT=database_port
-DATABASE_USERNAME=database_username
-DATABASE_PASSWORD=database_password
-DATABASE_URL=your_database_url
-
-TOKEN_SECRET=token_secret
-TOKEN_EXPIRATION=token_expiration
-
-API_PORT=api_port
+```bash
+cp .env.example .env
 ```
+
+> On Windows (PowerShell):
+```powershell
+Copy-Item .env.example .env
+```
+
+The `.env` file must follow the same variables from `.env.example`
 
 ### Example:
 ```env
+# API CONFIGURATIONS
+API_PORT=3000
+
+# DATABASE CONFIGURATIONS
 DATABASE=database
 DATABASE_HOST=127.0.0.1
 DATABASE_PORT=3306
 DATABASE_USERNAME=user
 DATABASE_PASSWORD=password
-DATABASE_URL="mysql://username:password:3306/database_name"
+DATABASE_URL="mysql://username:password@127.0.0.1:3306/database"
 
+# LOGIN CONFIGURATIONS
 TOKEN_SECRET=your_secret_key
 TOKEN_EXPIRATION=7d
-
-API_PORT=3000
 ```
-
-Attention: The environment variables should be the same as the example above
 
 ### Variables description
 | Variables | Description | Example |
 |----------|-----------|---------|
+| `API_PORT` | API port | `3000` |
 | `DATABASE` | Database Name | `database` |
 | `DATABASE_HOST` | Server host MySQL | `127.0.0.1` or `localhost` |
 | `DATABASE_PORT` | MySQL port | `3306` |
@@ -108,14 +108,38 @@ Attention: The environment variables should be the same as the example above
 | `DATABASE_URL` | URL prisma connection | `mysql://username:password:3306/db_name` |
 | `TOKEN_SECRET` | Secret key to JWT | Random safe string |
 | `TOKEN_EXPIRATION` | Token expiration time | `7d`, `24h`, `30d` |
-| `API_PORT` | API port | `3000` |
 
 ### 4. Execute the migrations
 
 The migrations configure database automatically:
 ```bash
-npm run prisma:migrate
+npx prisma migrate dev
 ```
+
+## Tests
+
+This project includes **unit tests** for the main layers (**repositories**, **services**, **controllers**, **middlewares**, **routes**) and utilities.
+
+- Tests location: `src/__tests__`
+- Runner: `jest` + `ts-jest`
+- Coverage threshold: **80% global** (see `jest.config.js`)
+
+### Run tests
+```bash
+npm test
+```
+
+### Watch mode
+```bash
+npm run test:watch
+```
+
+### Coverage report
+```bash
+npm run test:coverage
+```
+
+> Current coverage (latest local run): **96.51% statements**, **86.44% branches**, **100% functions**, **96.44% lines**.
 
 ## Configuration
 
@@ -193,7 +217,9 @@ The API is available in `http://localhost:3000`
 | `npm run dev` | Execute in dev mode with Nodemon |
 | `npm run build` | Compile TypeScript for JavaScript |
 | `npm start` | Execute the compiled version |
-| `npm run prisma:migrate` | Create and execute migrations |
+| `npm test` | Run unit tests |
+| `npm run test:watch` | Run tests in watch mode |
+| `npm run test:coverage` | Run tests with coverage |
 
 ## Build to production
 The project use [Sucrase](https://www.npmjs.com/package/sucrase) to quick compilation.
