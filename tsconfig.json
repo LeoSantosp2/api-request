@@ -5,6 +5,9 @@
       "ESNext",
       "DOM"
     ],
+    "types": [
+      "jest"
+    ],
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "module": "commonjs",
