@@ -1,5 +1,18 @@
+# Packages
 node_modules
+
+# Build
 dist
+
+# Environment Variables
 .env
+
+# Docker
 docker-compose.yaml
+
+# Tests
 coverage
+
+# Claude Code
+CLAUDE.md
+.claude
