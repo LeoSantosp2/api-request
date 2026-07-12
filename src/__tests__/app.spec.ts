@@ -1,4 +1,9 @@
+import 'dotenv/config';
+
 import request from 'supertest';
+import jwt from 'jsonwebtoken';
+
+import env from '../config/env';
 
 jest.mock('../services/users-service', () => ({
   listAll: jest.fn(),
@@ -23,7 +28,11 @@ describe('Testing App', () => {
 
     const app = (await import('../app')).default;
 
-    const res = await request(app).get('/api/users');
+    const token = jwt.sign({ id: '1', email: 'a@a.com' }, env.TOKEN_SECRET);
+
+    const res = await request(app)
+      .get('/api/users')
+      .set('Authorization', `Bearer ${token}`);
 
     expect(res.status).toBe(200);
     expect(res.body).toEqual([{ id: '1' }]);

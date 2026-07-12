@@ -2,6 +2,10 @@ import { Router } from 'express';
 
 import loginController from '../controllers/login-controller';
 
+import { validateBody } from '../middleware/validate-body';
+
+import { loginRequestSchema } from '../interfaces/login-schema';
+
 const router = Router();
 
 /**
@@ -52,6 +56,10 @@ const router = Router();
  *       500:
  *         description: Erro interno do servidor
  */
-router.post('/login', loginController.loginUser);
+router.post(
+  '/login',
+  validateBody(loginRequestSchema),
+  loginController.loginUser,
+);
 
 export default router;

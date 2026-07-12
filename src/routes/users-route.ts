@@ -3,6 +3,9 @@ import { Router } from 'express';
 import usersController from '../controllers/users-controller';
 
 import { loginRequired } from '../middleware/login-required';
+import { validateBody } from '../middleware/validate-body';
+
+import { userRequestSchema } from '../interfaces/users-schema';
 
 const router = Router();
 
@@ -11,7 +14,7 @@ const router = Router();
  * /api/users:
  *   get:
  *     summary: Retorna Todos os Usuários
- *     description: Busca e retorna a lista completa de usuários cadastrados.
+ *     description: Busca e retorna a lista completa de usuários cadastrados. Requer autenticação.
  *     tags:
  *       - Users
  *     responses:
@@ -36,29 +39,25 @@ const router = Router();
  *                   email:
  *                     type: string
  *                     example: joao@email.com
- *                   password:
- *                     type: string
- *                     example: $2b$08$kYO9fcdAmsqgnkhK/4o8CevBWnfLA.3TlZsmC69Jjl5bhVADu2NUu
- *                   token_auth:
- *                     type: string
- *                     example: null
  *                   created_at:
  *                     type: string
  *                     example: 2026-02-16
  *                   updated_at:
  *                     type: string
  *                     example: 2026-02-16
+ *       401:
+ *         description: Autenticação obrigatória
  *       500:
  *         description: Erro interno do servidor
  */
-router.get('/users', usersController.listAll);
+router.get('/users', loginRequired, usersController.listAll);
 
 /**
  * @openapi
  * /api/users/{id}:
  *   get:
  *     summary: Retorna um Usuário
- *     description: Busca e retorna um usuário.
+ *     description: Busca e retorna um usuário. Requer autenticação.
  *     tags:
  *       - Users
  *     responses:
@@ -81,22 +80,20 @@ router.get('/users', usersController.listAll);
  *                 email:
  *                   type: string
  *                   example: joao@email.com
- *                 password:
- *                   type: string
- *                   example: $2b$08$kYO9fcdAmsqgnkhK/4o8CevBWnfLA.3TlZsmC69Jjl5bhVADu2NUu
- *                 token_auth:
- *                   type: string
- *                   example: null
  *                 created_at:
  *                   type: string
  *                   example: 2026-02-16
  *                 updated_at:
  *                   type: string
  *                   example: 2026-02-16
+ *       401:
+ *         description: Autenticação obrigatória
+ *       404:
+ *         description: Usuário não encontrado
  *       500:
  *         description: Erro interno do servidor
  */
-router.get('/users/:id', usersController.listOne);
+router.get('/users/:id', loginRequired, usersController.listOne);
 
 /**
  * @openapi
@@ -142,7 +139,7 @@ router.get('/users/:id', usersController.listOne);
  *       500:
  *         description: Erro interno do servidor
  */
-router.post('/users', usersController.create);
+router.post('/users', validateBody(userRequestSchema), usersController.create);
 
 /**
  * @openapi
@@ -195,12 +192,19 @@ router.post('/users', usersController.create);
  *         description: Dados inválidos ou email já cadastrado
  *       401:
  *         description: Autenticação obrigatória
+ *       403:
+ *         description: Sem permissão para alterar este usuário
  *       404:
  *         description: Usuário não encontrado
  *       500:
  *         description: Erro interno do servidor
  */
-router.put('/users/:id', loginRequired, usersController.updateUser);
+router.put(
+  '/users/:id',
+  loginRequired,
+  validateBody(userRequestSchema),
+  usersController.updateUser,
+);
 
 /**
  * @openapi
@@ -223,6 +227,8 @@ router.put('/users/:id', loginRequired, usersController.updateUser);
  *         description: Usuário deletado com sucesso
  *       401:
  *         description: Autenticação obrigatória
+ *       403:
+ *         description: Sem permissão para deletar este usuário
  *       404:
  *         description: Usuário não encontrado
  *       500:
