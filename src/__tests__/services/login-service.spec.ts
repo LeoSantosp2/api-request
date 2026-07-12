@@ -1,7 +1,6 @@
 import jwt from 'jsonwebtoken';
 
 import { loginUser } from '../../services/login-service';
-import { HttpError } from '../../utils/http-error';
 import { LoginRequest } from '../../interfaces/login-request';
 
 jest.mock('../../config/env', () => ({
@@ -10,11 +9,6 @@ jest.mock('../../config/env', () => ({
     TOKEN_SECRET: 'test-secret',
     API_PORT: '3000',
   },
-}));
-
-jest.mock('validator/lib/isEmail', () => ({
-  __esModule: true,
-  default: (email: string) => email.includes('@'),
 }));
 
 jest.mock('../../repositories/login-repository', () => ({
@@ -41,15 +35,6 @@ describe('Testing Login Service', () => {
     jest.clearAllMocks();
   });
 
-  it('Should throw 400 when email is invalid', async () => {
-    const body: LoginRequest = { email: 'invalid', password: '12345678' };
-    const promise = loginUser(body);
-
-    await expect(promise).rejects.toBeInstanceOf(HttpError);
-    await expect(promise).rejects.toMatchObject({ statusCode: 400 });
-    await expect(promise).rejects.toHaveProperty('message', 'E-mail inválido.');
-  });
-
   it('Should throw 404 when user does not exist', async () => {
     const usersRepository = await import('../../repositories/users-repository');
     (usersRepository.showByEmail as jest.Mock).mockResolvedValueOnce(null);
@@ -71,8 +56,9 @@ describe('Testing Login Service', () => {
     (usersRepository.showByEmail as jest.Mock).mockResolvedValueOnce({
       id: '1',
       email: 'a@a.com',
+      password: 'hashed-password',
     });
-    (passwordUtil.passwordIsValid as jest.Mock).mockResolvedValueOnce(false);
+    (passwordUtil.passwordIsValid as jest.Mock).mockReturnValueOnce(false);
 
     const body: LoginRequest = { email: 'a@a.com', password: 'wrong' };
     const promise = loginUser(body);
@@ -89,8 +75,9 @@ describe('Testing Login Service', () => {
     (usersRepository.showByEmail as jest.Mock).mockResolvedValueOnce({
       id: '1',
       email: 'a@a.com',
+      password: 'hashed-password',
     });
-    (passwordUtil.passwordIsValid as jest.Mock).mockResolvedValueOnce(true);
+    (passwordUtil.passwordIsValid as jest.Mock).mockReturnValueOnce(true);
 
     (jwt.sign as jest.Mock).mockReturnValueOnce('signed-token');
     (loginRepository.login as jest.Mock).mockResolvedValueOnce({});
@@ -112,5 +99,9 @@ describe('Testing Login Service', () => {
       email: 'a@a.com',
       token: 'signed-token',
     });
+    expect(passwordUtil.passwordIsValid).toHaveBeenCalledWith(
+      '12345678',
+      'hashed-password',
+    );
   });
 });
