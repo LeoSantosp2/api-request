@@ -13,7 +13,6 @@ model Users {
   last_name  String
   email      String   @unique
   password   String
-  token_auth String?  @db.VarChar(255)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }
