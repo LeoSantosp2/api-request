@@ -76,11 +76,12 @@ describe('Testing Users Controller', () => {
     const req = {
       params: { id: '1' },
       body: {},
+      userId: '1',
     } as unknown as RequestProps<UserRequestProps>;
 
     await usersController.updateUser(req, res as unknown as Response);
 
-    expect(usersService.updateUser).toHaveBeenCalledWith({}, '1');
+    expect(usersService.updateUser).toHaveBeenCalledWith({}, '1', '1');
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.status().json).toHaveBeenCalledWith({
       status: 'success',
@@ -95,11 +96,12 @@ describe('Testing Users Controller', () => {
     const req = {
       params: { id: '1' },
       body: {} as UsersBodyProps,
+      userId: '1',
     } as unknown as RequestProps<UsersBodyProps>;
 
     await usersController.deleteUser(req, res as unknown as Response);
 
-    expect(usersService.deleteUser).toHaveBeenCalledWith('1');
+    expect(usersService.deleteUser).toHaveBeenCalledWith('1', '1');
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.status().json).toHaveBeenCalledWith({
       status: 'success',

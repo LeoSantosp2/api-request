@@ -3,6 +3,7 @@ import prisma from '../../config/prisma';
 import {
   index,
   show,
+  showPublic,
   showByEmail,
   store,
   update,
@@ -28,12 +29,23 @@ describe('Testing Users Repository', () => {
     jest.clearAllMocks();
   });
 
-  it('index calls prisma.users.findMany', async () => {
+  const publicSelect = {
+    id: true,
+    first_name: true,
+    last_name: true,
+    email: true,
+    created_at: true,
+    updated_at: true,
+  };
+
+  it('index calls prisma.users.findMany with a public select', async () => {
     (prisma.users.findMany as jest.Mock).mockResolvedValueOnce([{ id: '1' }]);
 
     const result = await index();
 
-    expect(prisma.users.findMany).toHaveBeenCalledWith();
+    expect(prisma.users.findMany).toHaveBeenCalledWith({
+      select: publicSelect,
+    });
     expect(result).toEqual([{ id: '1' }]);
   });
 
@@ -43,6 +55,18 @@ describe('Testing Users Repository', () => {
     const result = await show('1');
 
     expect(prisma.users.findFirst).toHaveBeenCalledWith({ where: { id: '1' } });
+    expect(result).toEqual({ id: '1' });
+  });
+
+  it('showPublic calls prisma.users.findFirst with id and a public select', async () => {
+    (prisma.users.findFirst as jest.Mock).mockResolvedValueOnce({ id: '1' });
+
+    const result = await showPublic('1');
+
+    expect(prisma.users.findFirst).toHaveBeenCalledWith({
+      where: { id: '1' },
+      select: publicSelect,
+    });
     expect(result).toEqual({ id: '1' });
   });
 

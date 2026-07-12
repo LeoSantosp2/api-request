@@ -2,10 +2,23 @@ import prisma from '../config/prisma';
 
 import { CreateUsersProps } from '../interfaces/users-props';
 
-export const index = async () => await prisma.users.findMany();
+const publicSelect = {
+  id: true,
+  first_name: true,
+  last_name: true,
+  email: true,
+  created_at: true,
+  updated_at: true,
+};
+
+export const index = async () =>
+  await prisma.users.findMany({ select: publicSelect });
 
 export const show = async (id: string) =>
   await prisma.users.findFirst({ where: { id } });
+
+export const showPublic = async (id: string) =>
+  await prisma.users.findFirst({ where: { id }, select: publicSelect });
 
 export const showByEmail = async (email: string) =>
   await prisma.users.findFirst({ where: { email } });

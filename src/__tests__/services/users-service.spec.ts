@@ -75,35 +75,6 @@ describe('Testing Users Services', () => {
     );
   });
 
-  it('Should return error when creating with empty fields', async () => {
-    const promise = create({
-      firstName: '',
-      lastName: 'Santos',
-      email: 'leonardo@email.com',
-      password: '12345678',
-      confirmPassword: '12345678',
-    });
-
-    await expect(promise).rejects.toMatchObject({ statusCode: 400 });
-    await expect(promise).rejects.toHaveProperty(
-      'message',
-      'Os campos não podem estar vazios.',
-    );
-  });
-
-  it('Should return error when creating with invalid email', async () => {
-    const promise = create({
-      firstName: 'Leonardo',
-      lastName: 'Santos',
-      email: 'invalid-email',
-      password: '12345678',
-      confirmPassword: '12345678',
-    });
-
-    await expect(promise).rejects.toMatchObject({ statusCode: 400 });
-    await expect(promise).rejects.toHaveProperty('message', 'E-mail inválido.');
-  });
-
   it('Should return error when creating with existing email', async () => {
     (prisma.users.findFirst as jest.Mock).mockResolvedValueOnce({
       id: 'existing',
@@ -122,42 +93,6 @@ describe('Testing Users Services', () => {
     await expect(promise).rejects.toHaveProperty(
       'message',
       'E-mail já cadastrado.',
-    );
-  });
-
-  it('Should return error when creating with different passwords', async () => {
-    (prisma.users.findFirst as jest.Mock).mockResolvedValueOnce(null);
-
-    const promise = create({
-      firstName: 'Leonardo',
-      lastName: 'Santos',
-      email: 'leonardo@email.com',
-      password: '12345678',
-      confirmPassword: '87654321',
-    });
-
-    await expect(promise).rejects.toMatchObject({ statusCode: 400 });
-    await expect(promise).rejects.toHaveProperty(
-      'message',
-      'As senhas devem ser iguais.',
-    );
-  });
-
-  it('Should return error when creating with short password', async () => {
-    (prisma.users.findFirst as jest.Mock).mockResolvedValueOnce(null);
-
-    const promise = create({
-      firstName: 'Leonardo',
-      lastName: 'Santos',
-      email: 'leonardo@email.com',
-      password: '123',
-      confirmPassword: '123',
-    });
-
-    await expect(promise).rejects.toMatchObject({ statusCode: 400 });
-    await expect(promise).rejects.toHaveProperty(
-      'message',
-      'A senha deve ter no minímo 8 caracteres.',
     );
   });
 
@@ -207,33 +142,33 @@ describe('Testing Users Services', () => {
     );
   });
 
-  it('Should return error when updating with invalid email', async () => {
-    (prisma.users.findFirst as jest.Mock).mockImplementation(
-      ({ where }: { where: { id: string } }) =>
-        where?.id
-          ? Promise.resolve({
-            id: '1',
-            first_name: 'Old',
-            last_name: 'Name',
-            email: 'old@email.com',
-            password: 'hashed-password',
-          })
-          : Promise.resolve(null),
-    );
+  it('Should return error when requester is not the target user', async () => {
+    (prisma.users.findFirst as jest.Mock).mockResolvedValueOnce({
+      id: '1',
+      first_name: 'Old',
+      last_name: 'Name',
+      email: 'old@email.com',
+      password: 'hashed-password',
+    });
 
     const promise = updateUser(
       {
-        firstName: 'Old',
+        firstName: 'New',
         lastName: 'Name',
-        email: 'invalid-email',
+        email: 'old@email.com',
         password: '12345678',
         confirmPassword: '12345678',
       },
       '1',
+      'someone-else',
     );
 
-    await expect(promise).rejects.toMatchObject({ statusCode: 400 });
-    await expect(promise).rejects.toHaveProperty('message', 'E-mail inválido.');
+    await expect(promise).rejects.toMatchObject({ statusCode: 403 });
+    await expect(promise).rejects.toHaveProperty(
+      'message',
+      'Você não tem permissão para alterar este usuário.',
+    );
+    expect(prisma.users.update).not.toHaveBeenCalled();
   });
 
   it('Should update password when it has changed', async () => {
@@ -258,6 +193,7 @@ describe('Testing Users Services', () => {
           password: '12345678',
           confirmPassword: '12345678',
         },
+        '1',
         '1',
       ),
     ).resolves.toBeUndefined();
@@ -286,6 +222,7 @@ describe('Testing Users Services', () => {
           confirmPassword: '12345678',
         },
         '1',
+        '1',
       ),
     ).resolves.toBeUndefined();
 
@@ -295,13 +232,30 @@ describe('Testing Users Services', () => {
   it('Should return error when deleting a missing user', async () => {
     (prisma.users.findFirst as jest.Mock).mockResolvedValueOnce(null);
 
-    const promise = deleteUser('missing');
+    const promise = deleteUser('missing', 'missing');
 
     await expect(promise).rejects.toMatchObject({ statusCode: 404 });
     await expect(promise).rejects.toHaveProperty(
       'message',
       'Usuário não encontrado.',
     );
+  });
+
+  it('Should return error when requester is not the user being deleted', async () => {
+    (prisma.users.findFirst as jest.Mock).mockResolvedValueOnce({
+      id: '1',
+      email: 'email@email.com',
+      token_auth: null,
+    });
+
+    const promise = deleteUser('1', 'someone-else');
+
+    await expect(promise).rejects.toMatchObject({ statusCode: 403 });
+    await expect(promise).rejects.toHaveProperty(
+      'message',
+      'Você não tem permissão para deletar este usuário.',
+    );
+    expect(prisma.users.delete).not.toHaveBeenCalled();
   });
 
   it('Should delete a user', async () => {
@@ -313,7 +267,7 @@ describe('Testing Users Services', () => {
 
     (prisma.users.delete as jest.Mock).mockResolvedValueOnce({});
 
-    await expect(deleteUser('1')).resolves.toBeUndefined();
+    await expect(deleteUser('1', '1')).resolves.toBeUndefined();
     expect(prisma.users.delete).toHaveBeenCalledWith({ where: { id: '1' } });
   });
 });

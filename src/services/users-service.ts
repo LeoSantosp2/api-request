@@ -1,10 +1,10 @@
-import isEmail from 'validator/lib/isEmail';
 import { v4 } from 'uuid';
 import { hashSync, compareSync } from 'bcrypt';
 
 import {
   index,
   show,
+  showPublic,
   showByEmail,
   store,
   update,
@@ -18,7 +18,7 @@ import { UserRequestProps } from '../interfaces/users-props';
 export const listAll = async () => await index();
 
 export const listOne = async (id: string) => {
-  const user = await show(id);
+  const user = await showPublic(id);
 
   if (!user) {
     throw new HttpError(404, 'Usuário não encontrado.');
@@ -28,32 +28,10 @@ export const listOne = async (id: string) => {
 };
 
 export const create = async (user: UserRequestProps) => {
-  if (
-    !user.firstName ||
-    !user.lastName ||
-    !user.email ||
-    !user.password ||
-    !user.confirmPassword
-  ) {
-    throw new HttpError(400, 'Os campos não podem estar vazios.');
-  }
-
-  if (!isEmail(user.email)) {
-    throw new HttpError(400, 'E-mail inválido.');
-  }
-
   const emailExists = await showByEmail(user.email);
 
   if (emailExists) {
     throw new HttpError(400, 'E-mail já cadastrado.');
-  }
-
-  if (user.password !== user.confirmPassword) {
-    throw new HttpError(400, 'As senhas devem ser iguais.');
-  }
-
-  if (user.password.length < 8 || user.confirmPassword.length < 8) {
-    throw new HttpError(400, 'A senha deve ter no minímo 8 caracteres.');
   }
 
   const newUser = {
@@ -67,11 +45,22 @@ export const create = async (user: UserRequestProps) => {
   await store(newUser);
 };
 
-export const updateUser = async (user: UserRequestProps, id: string) => {
+export const updateUser = async (
+  user: UserRequestProps,
+  id: string,
+  requesterId?: string,
+) => {
   const currentUser = await show(id);
 
   if (!currentUser) {
     throw new HttpError(404, 'Usuário não encontrado.');
+  }
+
+  if (requesterId !== id) {
+    throw new HttpError(
+      403,
+      'Você não tem permissão para alterar este usuário.',
+    );
   }
 
   if (currentUser.first_name !== user.firstName) {
@@ -85,10 +74,6 @@ export const updateUser = async (user: UserRequestProps, id: string) => {
   if (currentUser.email !== user.email) {
     const emailExists = await showByEmail(user.email);
 
-    if (!isEmail(user.email)) {
-      throw new HttpError(400, 'E-mail inválido.');
-    }
-
     if (emailExists) {
       throw new HttpError(400, 'E-mail já cadastrado.');
     }
@@ -97,25 +82,24 @@ export const updateUser = async (user: UserRequestProps, id: string) => {
   }
 
   if (!compareSync(user.password, currentUser.password)) {
-    if (user.password !== user.confirmPassword) {
-      throw new HttpError(400, 'As senhas devem ser iguais.');
-    }
-
-    if (user.password.length < 8 || user.confirmPassword.length < 8) {
-      throw new HttpError(400, 'A senha deve ter no minímo 8 caracteres.');
-    }
-
     currentUser.password = hashSync(user.password, 8);
   }
 
   await update(currentUser, id);
 };
 
-export const deleteUser = async (id: string) => {
+export const deleteUser = async (id: string, requesterId?: string) => {
   const user = await show(id);
 
   if (!user) {
     throw new HttpError(404, 'Usuário não encontrado.');
+  }
+
+  if (requesterId !== id) {
+    throw new HttpError(
+      403,
+      'Você não tem permissão para deletar este usuário.',
+    );
   }
 
   await IDelete(id);

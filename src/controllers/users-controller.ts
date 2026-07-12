@@ -35,7 +35,7 @@ class UsersController {
   }
 
   async updateUser(req: RequestProps<UserRequestProps>, res: Response) {
-    await updateUser(req.body, req.params.id);
+    await updateUser(req.body, req.params.id, req.userId);
 
     return res.status(200).json({
       status: 'success',
@@ -44,7 +44,7 @@ class UsersController {
   }
 
   async deleteUser(req: RequestProps<UsersBodyProps>, res: Response) {
-    await deleteUser(req.params.id);
+    await deleteUser(req.params.id, req.userId);
 
     return res.status(200).json({
       status: 'success',
