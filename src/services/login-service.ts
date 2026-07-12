@@ -1,8 +1,7 @@
-import jwt from 'jsonwebtoken';
+import jwt, { SignOptions } from 'jsonwebtoken';
 
 import env from '../config/env';
 
-import { login } from '../repositories/login-repository';
 import { showByEmail } from '../repositories/users-repository';
 
 import { HttpError } from '../utils/http-error';
@@ -13,23 +12,17 @@ import { LoginRequest } from '../interfaces/login-request';
 export const loginUser = async (userDatas: LoginRequest) => {
   const user = await showByEmail(userDatas.email);
 
-  if (!user) {
-    throw new HttpError(404, 'Usuário não existe.');
-  }
-
-  if (!passwordIsValid(userDatas.password, user.password)) {
-    throw new HttpError(400, 'Senha inválida.');
+  if (!user || !passwordIsValid(userDatas.password, user.password)) {
+    throw new HttpError(401, 'E-mail ou senha inválidos.');
   }
 
   const token = jwt.sign(
     { id: user.id, email: userDatas.email },
     env.TOKEN_SECRET,
     {
-      expiresIn: '7d',
+      expiresIn: env.TOKEN_EXPIRATION as SignOptions['expiresIn'],
     },
   );
-
-  await login(userDatas, token);
 
   return {
     id: user.id,
