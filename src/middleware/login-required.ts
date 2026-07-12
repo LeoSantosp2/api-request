@@ -25,7 +25,9 @@ export const loginRequired = (
   }
 
   try {
-    const payload = jwt.verify(token, env.TOKEN_SECRET);
+    const payload = jwt.verify(token, env.TOKEN_SECRET, {
+      algorithms: ['HS256'],
+    });
 
     if (typeof payload === 'string' || !payload.id) {
       throw new HttpError(401, 'Token inválido.');
