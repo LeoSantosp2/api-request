@@ -1,66 +1,87 @@
-import { Request, Response } from 'express';
+import 'dotenv/config';
 
-import prisma from '../../config/prisma';
+import { Request, Response } from 'express';
+import jwt from 'jsonwebtoken';
+
+import env from '../../config/env';
 import { loginRequired } from '../../middleware/login-required';
 import { HttpError } from '../../utils/http-error';
-
-jest.mock('../../config/prisma', () => ({
-  __esModule: true,
-  default: {
-    users: {
-      findFirst: jest.fn(),
-    },
-  },
-}));
+import { RequestProps } from '../../interfaces/request-props';
 
 describe('Login Required Middleware', () => {
   const mockRequest = (headers?: Record<string, string>) =>
-    ({ headers: headers || {} } as Request);
+    ({ headers: headers || {} }) as Request;
 
-  const mockResponse = () => ({} as Response);
+  const mockResponse = () => ({}) as Response;
 
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it('Should return error message "NecessÃ¡rio fazer login" and statusCode "401"', async () => {
+  it('Should throw error message "Necessário fazer login." and statusCode "401" when no token is sent', () => {
     const req = mockRequest();
     const res = mockResponse();
 
-    const promise = loginRequired(req, res, jest.fn());
+    expect(() => loginRequired(req, res, jest.fn())).toThrow(HttpError);
 
-    await expect(promise).rejects.toBeInstanceOf(HttpError);
-    await expect(promise).rejects.toMatchObject({ statusCode: 401 });
-    await expect(promise).rejects.toHaveProperty(
-      'message',
-      'Necessário fazer login.',
-    );
+    try {
+      loginRequired(req, res, jest.fn());
+    } catch (error) {
+      expect(error).toMatchObject({ statusCode: 401 });
+      expect(error).toHaveProperty('message', 'Necessário fazer login.');
+    }
   });
 
-  it('Should return error when token is invalid', async () => {
-    (prisma.users.findFirst as jest.Mock).mockResolvedValueOnce(null);
-
+  it('Should throw error when authorization header has no Bearer scheme', () => {
     const req = mockRequest({ authorization: 'token' });
     const res = mockResponse();
 
-    const promise = loginRequired(req, res, jest.fn());
-
-    await expect(promise).rejects.toMatchObject({ statusCode: 401 });
-    await expect(promise).rejects.toHaveProperty('message', 'Usuário inválido.');
+    try {
+      loginRequired(req, res, jest.fn());
+    } catch (error) {
+      expect(error).toMatchObject({ statusCode: 401 });
+      expect(error).toHaveProperty('message', 'Token inválido.');
+    }
   });
 
-  it('Should call next when token is valid', async () => {
-    (prisma.users.findFirst as jest.Mock).mockResolvedValueOnce({
-      id: '1',
-      token_auth: 'token',
-    });
+  it('Should throw error when token is invalid or expired', () => {
+    const req = mockRequest({ authorization: 'Bearer invalid.token.here' });
+    const res = mockResponse();
+
+    try {
+      loginRequired(req, res, jest.fn());
+    } catch (error) {
+      expect(error).toMatchObject({ statusCode: 401 });
+      expect(error).toHaveProperty('message', 'Token inválido.');
+    }
+  });
+
+  it('Should throw error when token was signed with a different secret', () => {
+    const token = jwt.sign(
+      { id: '1', email: 'user@example.com' },
+      'wrong-secret',
+    );
+
+    const req = mockRequest({ authorization: `Bearer ${token}` });
+    const res = mockResponse();
+
+    try {
+      loginRequired(req, res, jest.fn());
+    } catch (error) {
+      expect(error).toMatchObject({ statusCode: 401 });
+      expect(error).toHaveProperty('message', 'Token inválido.');
+    }
+  });
+
+  it('Should call next and attach userId when token is valid', () => {
+    const token = jwt.sign(
+      { id: '1', email: 'user@example.com' },
+      env.TOKEN_SECRET,
+    );
 
     const next = jest.fn();
-    const req = mockRequest({ authorization: 'token' });
+    const req = mockRequest({ authorization: `Bearer ${token}` });
     const res = mockResponse();
 
-    await loginRequired(req, res, next);
+    loginRequired(req, res, next);
 
     expect(next).toHaveBeenCalledTimes(1);
+    expect((req as RequestProps).userId).toBe('1');
   });
 });

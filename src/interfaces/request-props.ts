@@ -5,4 +5,5 @@ export interface RequestProps<T = undefined> extends Request {
   params: {
     id: string;
   };
+  userId?: string;
 }

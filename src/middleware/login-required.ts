@@ -1,24 +1,39 @@
 import { Request, Response, NextFunction } from 'express';
+import jwt from 'jsonwebtoken';
 
-import prisma from '../config/prisma';
+import env from '../config/env';
 
 import { HttpError } from '../utils/http-error';
 
-export const loginRequired = async (
+import { RequestProps } from '../interfaces/request-props';
+
+export const loginRequired = (
   req: Request,
   res: Response,
   next: NextFunction,
 ) => {
-  const token = req.headers.authorization;
+  const authHeader = req.headers.authorization;
 
-  if (!token) {
+  if (!authHeader) {
     throw new HttpError(401, 'Necessário fazer login.');
   }
 
-  const user = await prisma.users.findFirst({ where: { token_auth: token } });
+  const [scheme, token] = authHeader.split(' ');
 
-  if (!user) {
-    throw new HttpError(401, 'Usuário inválido.');
+  if (scheme !== 'Bearer' || !token) {
+    throw new HttpError(401, 'Token inválido.');
+  }
+
+  try {
+    const payload = jwt.verify(token, env.TOKEN_SECRET);
+
+    if (typeof payload === 'string' || !payload.id) {
+      throw new HttpError(401, 'Token inválido.');
+    }
+
+    (req as RequestProps).userId = payload.id;
+  } catch {
+    throw new HttpError(401, 'Token inválido.');
   }
 
   return next();
