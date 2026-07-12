@@ -245,7 +245,6 @@ describe('Testing Users Services', () => {
     (prisma.users.findFirst as jest.Mock).mockResolvedValueOnce({
       id: '1',
       email: 'email@email.com',
-      token_auth: null,
     });
 
     const promise = deleteUser('1', 'someone-else');
@@ -262,7 +261,6 @@ describe('Testing Users Services', () => {
     (prisma.users.findFirst as jest.Mock).mockResolvedValueOnce({
       id: '1',
       email: 'email@email.com',
-      token_auth: null,
     });
 
     (prisma.users.delete as jest.Mock).mockResolvedValueOnce({});

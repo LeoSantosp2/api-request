@@ -3,6 +3,7 @@ import { Router } from 'express';
 import loginController from '../controllers/login-controller';
 
 import { validateBody } from '../middleware/validate-body';
+import { loginRateLimit } from '../middleware/login-rate-limit';
 
 import { loginRequestSchema } from '../interfaces/login-schema';
 
@@ -50,14 +51,17 @@ const router = Router();
  *                   type: string
  *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImVkZGNkYmI2LTAyOTQtNGYwZS05NTljLWZlYTg0Y2Q2ODdjNCIsImVtYWlsIjoiam9hb0BlbWFpbC5jb20iLCJpYXQiOjE3Mzk3MzcwMDAsImV4cCI6MTc0MDM0MTgwMH0.abcd1234...
  *       400:
- *         description: E-mail inválido ou senha inválida
- *       404:
- *         description: Usuário não encontrado
+ *         description: Dados inválidos
+ *       401:
+ *         description: E-mail ou senha inválidos
+ *       429:
+ *         description: Muitas tentativas de login
  *       500:
  *         description: Erro interno do servidor
  */
 router.post(
   '/login',
+  loginRateLimit,
   validateBody(loginRequestSchema),
   loginController.loginUser,
 );
