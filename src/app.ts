@@ -3,10 +3,10 @@ import swaggerUi from 'swagger-ui-express';
 import 'dotenv/config';
 import 'express-async-errors';
 
-import usersRouter from './routes/users-route';
-import loginRouter from './routes/login-route';
+import usersRouter from './modules/users/user-router';
+import loginRouter from './modules/login/login-route';
 
-import swaggerDocs from './config/swagger';
+import { generateOpenApiDocument } from './docs/generate-document';
 
 import { errorHandler } from './middleware/error-handler';
 
@@ -26,9 +26,14 @@ class App {
   }
 
   routes() {
+    this.app.use('/api/health', (req, res) => res.send({ status: 'ok' }));
     this.app.use('/api', usersRouter);
     this.app.use('/api', loginRouter);
-    this.app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+    this.app.use(
+      '/api/docs',
+      swaggerUi.serve,
+      swaggerUi.setup(generateOpenApiDocument()),
+    );
   }
 }
 
