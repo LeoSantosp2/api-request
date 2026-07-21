@@ -9,6 +9,7 @@ const envSchema = z.object({
   TOKEN_SECRET: z.string(),
   TOKEN_EXPIRATION: z.string(),
   API_PORT: z.string(),
+  NODE_ENV: z.enum(['development', 'production', 'test']),
   DATABASE_URL: z.string(),
 });
 

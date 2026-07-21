@@ -1,5 +1,5 @@
-import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import { Request, Response, NextFunction } from 'express';
 
 import env from '../config/env';
 
@@ -35,7 +35,7 @@ export const loginRequired = (
 
     (req as RequestProps).userId = payload.id;
   } catch {
-    throw new HttpError(401, 'Token inválido.');
+    throw new HttpError(401, 'Token expirado ou inválido.');
   }
 
   return next();
