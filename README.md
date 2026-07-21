@@ -82,6 +82,7 @@ The `.env` file must follow the same variables from `.env.example`
 ```env
 # API CONFIGURATIONS
 API_PORT=3000
+NODE_ENV=development
 
 # DATABASE CONFIGURATIONS
 DATABASE=database
@@ -100,6 +101,7 @@ TOKEN_EXPIRATION=7d
 | Variables | Description | Example |
 |----------|-----------|---------|
 | `API_PORT` | API port | `3000` |
+| `NODE_ENV` | Runtime environment | `development`, `production` or `test` |
 | `DATABASE` | Database Name | `database` |
 | `DATABASE_HOST` | Server host MySQL | `127.0.0.1` or `localhost` |
 | `DATABASE_PORT` | MySQL port | `3306` |
@@ -152,7 +154,9 @@ The project use prisma ORM. The schema of the database is in `prisma/schema.pris
 
 ### Swagger/Documentation
 
-The interactive documentation of the endpoints is in available in:
+The API documentation is generated with [`@asteasolutions/zod-to-openapi`](https://www.npmjs.com/package/@asteasolutions/zod-to-openapi), reusing the same Zod schemas used for request validation. The OpenAPI paths and response schemas live in `src/docs/`, not in the route files.
+
+The interactive documentation of the endpoints is available in:
 ```
 http://localhost:3000/api/docs
 ```
@@ -251,23 +255,30 @@ npm start
 │   ├── server.ts       # Server initiator
 │   ├── config/         # General configurations
 │   │   ├── env.ts      # Environment variables
-│   │   ├── prisma.ts   # Prisma instance
-│   │   └── swagger.ts  # Swagger Configuration
-│   ├── controllers/    # Controllers (request logic)
-│   │   ├── login-controller.ts
-│   │   └── users-controller.ts
-│   ├── services/       # Services (business logic)
-│   │   ├── login-service.ts
-│   │   └── users-service.ts
-│   ├── repositories/   # Repositories (data manipulation)
-│   │   ├── login-repository.ts
-│   │   └── users-repository.ts
-│   ├── routes/         # Routes definition
-│   │   ├── login-route.ts
-│   │   └── users-route.ts
+│   │   └── prisma.ts   # Prisma instance
+│   ├── docs/           # OpenAPI documentation (zod-to-openapi)
+│   │   ├── registry.ts             # OpenAPIRegistry + bearerAuth security scheme
+│   │   ├── common.ts               # Shared response schemas (error/success)
+│   │   ├── login.ts                # /api/login OpenAPI paths
+│   │   ├── users.ts                # /api/users OpenAPI paths
+│   │   └── generate-document.ts    # Builds the final OpenAPI document
+│   ├── modules/         # Feature modules (route, controller, service, repository, schema)
+│   │   ├── login/
+│   │   │   ├── login-route.ts
+│   │   │   ├── login-controller.ts
+│   │   │   ├── login-service.ts
+│   │   │   └── login-schema.ts
+│   │   └── users/
+│   │       ├── user-router.ts
+│   │       ├── user-controller.ts
+│   │       ├── user-service.ts
+│   │       ├── user-repository.ts
+│   │       └── user-schema.ts
 │   ├── middleware/     # Middlewares
 │   │   ├── error-handler.ts
-│   │   └── login-required.ts
+│   │   ├── login-required.ts
+│   │   ├── login-rate-limit.ts
+│   │   └── validate-body.ts
 │   ├── interfaces/     # TypeScript Interfaces
 │   ├── types/          # TypeScript Types
 │   └── utils/          # Utilitaries functions
@@ -280,7 +291,7 @@ npm start
 
 ### Architectural pattern
 
-The project follow the layered architecture pattern.
+The project follow the layered architecture pattern, grouped by feature module under `src/modules/` (route → controller → service → repository).
 
 - **Routes**: Define the API endpoints
 - **Controllers**: Receives HTTP requests and call the services
