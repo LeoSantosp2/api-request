@@ -3,10 +3,10 @@ import 'dotenv/config';
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 
-import env from '../../config/env';
-import { loginRequired } from '../../middleware/login-required';
-import { HttpError } from '../../utils/http-error';
-import { RequestProps } from '../../interfaces/request-props';
+import env from '../../src/config/env';
+import { loginRequired } from '../../src/middleware/login-required';
+import { HttpError } from '../../src/utils/http-error';
+import { RequestProps } from '../../src/interfaces/request-props';
 
 describe('Login Required Middleware', () => {
   const mockRequest = (headers?: Record<string, string>) =>
@@ -48,7 +48,7 @@ describe('Login Required Middleware', () => {
       loginRequired(req, res, jest.fn());
     } catch (error) {
       expect(error).toMatchObject({ statusCode: 401 });
-      expect(error).toHaveProperty('message', 'Token inválido.');
+      expect(error).toHaveProperty('message', 'Token expirado ou inválido.');
     }
   });
 
@@ -65,7 +65,7 @@ describe('Login Required Middleware', () => {
       loginRequired(req, res, jest.fn());
     } catch (error) {
       expect(error).toMatchObject({ statusCode: 401 });
-      expect(error).toHaveProperty('message', 'Token inválido.');
+      expect(error).toHaveProperty('message', 'Token expirado ou inválido.');
     }
   });
 

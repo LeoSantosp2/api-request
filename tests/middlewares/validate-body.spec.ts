@@ -1,8 +1,8 @@
 import { z } from 'zod';
 import { Request, Response } from 'express';
 
-import { validateBody } from '../../middleware/validate-body';
-import { HttpError } from '../../utils/http-error';
+import { validateBody } from '../../src/middleware/validate-body';
+import { HttpError } from '../../src/utils/http-error';
 
 describe('Validate Body Middleware', () => {
   const schema = z.object({

@@ -2,7 +2,7 @@ import express from 'express';
 import request from 'supertest';
 import rateLimit from 'express-rate-limit';
 
-import { HttpError } from '../../utils/http-error';
+import { HttpError } from '../../src/utils/http-error';
 
 describe('Login Rate Limit Middleware', () => {
   const buildApp = () => {

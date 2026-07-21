@@ -1,6 +1,6 @@
 import { hashSync } from 'bcrypt';
 
-import { passwordIsValid } from '../../utils/password-is-valid';
+import { passwordIsValid } from '../../src/utils/password-is-valid';
 
 describe('Testing passwordIsValid function', () => {
   it('should return True when password matches the hash', () => {

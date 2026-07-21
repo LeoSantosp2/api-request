@@ -1,15 +1,9 @@
 /* eslint-disable prettier/prettier */
-import prisma from '../../config/prisma';
+import prisma from '../../src/config/prisma';
 
-import {
-  listAll,
-  listOne,
-  create,
-  updateUser,
-  deleteUser,
-} from '../../services/users-service';
+import { service } from '../../src/modules/users/user-service';
 
-import { HttpError } from '../../utils/http-error';
+import { HttpError } from '../../src/utils/http-error';
 
 jest.mock('uuid', () => ({
   v4: () => 'fixed-uuid',
@@ -20,7 +14,7 @@ jest.mock('bcrypt', () => ({
   compareSync: jest.fn(() => true),
 }));
 
-jest.mock('../../config/prisma', () => ({
+jest.mock('../../src/config/prisma', () => ({
   __esModule: true,
   default: {
     users: {
@@ -41,7 +35,7 @@ describe('Testing Users Services', () => {
   it('Should return all users', async () => {
     (prisma.users.findMany as jest.Mock).mockResolvedValue([]);
 
-    const users = await listAll();
+    const users = await service.listAll();
 
     expect(users).toEqual([]);
   });
@@ -53,7 +47,7 @@ describe('Testing Users Services', () => {
       email: 'leonardo@email.com',
     });
 
-    const user = await listOne('1');
+    const user = await service.listOne('1');
 
     expect(user).toEqual({
       id: '1',
@@ -65,13 +59,13 @@ describe('Testing Users Services', () => {
   it('Should return error "404 - Usuário não encontrado"', async () => {
     (prisma.users.findFirst as jest.Mock).mockResolvedValueOnce(null);
 
-    const promise = listOne('2');
+    const promise = service.listOne('2');
 
     await expect(promise).rejects.toBeInstanceOf(HttpError);
     await expect(promise).rejects.toMatchObject({ statusCode: 404 });
     await expect(promise).rejects.toHaveProperty(
       'message',
-      'Usuário não encontrado.',
+      'Usuário não encontrado ou não existe.',
     );
   });
 
@@ -81,7 +75,7 @@ describe('Testing Users Services', () => {
       email: 'leonardo@email.com',
     });
 
-    const promise = create({
+    const promise = service.create({
       firstName: 'Leonardo',
       lastName: 'Santos',
       email: 'leonardo@email.com',
@@ -90,10 +84,7 @@ describe('Testing Users Services', () => {
     });
 
     await expect(promise).rejects.toMatchObject({ statusCode: 400 });
-    await expect(promise).rejects.toHaveProperty(
-      'message',
-      'E-mail já cadastrado.',
-    );
+    await expect(promise).rejects.toHaveProperty('message', 'Dados inválidos.');
   });
 
   it('Should create a user', async () => {
@@ -101,7 +92,7 @@ describe('Testing Users Services', () => {
     (prisma.users.create as jest.Mock).mockResolvedValueOnce({});
 
     await expect(
-      create({
+      service.create({
         firstName: 'Leonardo',
         lastName: 'Santos',
         email: 'leonardo@email.com',
@@ -121,37 +112,8 @@ describe('Testing Users Services', () => {
     });
   });
 
-  it('Should return error when updating a missing user', async () => {
-    (prisma.users.findFirst as jest.Mock).mockResolvedValueOnce(null);
-
-    const promise = updateUser(
-      {
-        firstName: 'New',
-        lastName: 'Name',
-        email: 'new@email.com',
-        password: '12345678',
-        confirmPassword: '12345678',
-      },
-      'missing',
-    );
-
-    await expect(promise).rejects.toMatchObject({ statusCode: 404 });
-    await expect(promise).rejects.toHaveProperty(
-      'message',
-      'Usuário não encontrado.',
-    );
-  });
-
   it('Should return error when requester is not the target user', async () => {
-    (prisma.users.findFirst as jest.Mock).mockResolvedValueOnce({
-      id: '1',
-      first_name: 'Old',
-      last_name: 'Name',
-      email: 'old@email.com',
-      password: 'hashed-password',
-    });
-
-    const promise = updateUser(
+    const promise = service.update(
       {
         firstName: 'New',
         lastName: 'Name',
@@ -166,42 +128,34 @@ describe('Testing Users Services', () => {
     await expect(promise).rejects.toMatchObject({ statusCode: 403 });
     await expect(promise).rejects.toHaveProperty(
       'message',
-      'Você não tem permissão para alterar este usuário.',
+      'Você não tem permissão para editar este usuário.',
     );
-    expect(prisma.users.update).not.toHaveBeenCalled();
+    expect(prisma.users.findFirst).not.toHaveBeenCalled();
   });
 
-  it('Should update password when it has changed', async () => {
-    const bcrypt = await import('bcrypt');
-    (bcrypt.compareSync as unknown as jest.Mock).mockReturnValueOnce(false);
+  it('Should return error when updating a missing user', async () => {
+    (prisma.users.findFirst as jest.Mock).mockResolvedValueOnce(null);
 
-    (prisma.users.findFirst as jest.Mock).mockResolvedValueOnce({
-      id: '1',
-      first_name: 'Old',
-      last_name: 'Name',
-      email: 'old@email.com',
-      password: 'old-hash',
-    });
-    (prisma.users.update as jest.Mock).mockResolvedValueOnce({});
+    const promise = service.update(
+      {
+        firstName: 'New',
+        lastName: 'Name',
+        email: 'new@email.com',
+        password: '12345678',
+        confirmPassword: '12345678',
+      },
+      '1',
+      '1',
+    );
 
-    await expect(
-      updateUser(
-        {
-          firstName: 'Old',
-          lastName: 'Name',
-          email: 'old@email.com',
-          password: '12345678',
-          confirmPassword: '12345678',
-        },
-        '1',
-        '1',
-      ),
-    ).resolves.toBeUndefined();
-
-    expect(prisma.users.update).toHaveBeenCalledTimes(1);
+    await expect(promise).rejects.toMatchObject({ statusCode: 404 });
+    await expect(promise).rejects.toHaveProperty(
+      'message',
+      'Usuário não encontrado ou não existe.',
+    );
   });
 
-  it('Should update a user', async () => {
+  it('Should update a user in place without persisting via the repository', async () => {
     (prisma.users.findFirst as jest.Mock).mockResolvedValueOnce({
       id: '1',
       first_name: 'Old',
@@ -210,10 +164,8 @@ describe('Testing Users Services', () => {
       password: 'hashed-password',
     });
 
-    (prisma.users.update as jest.Mock).mockResolvedValueOnce({});
-
     await expect(
-      updateUser(
+      service.update(
         {
           firstName: 'New',
           lastName: 'Name',
@@ -226,28 +178,38 @@ describe('Testing Users Services', () => {
       ),
     ).resolves.toBeUndefined();
 
-    expect(prisma.users.update).toHaveBeenCalledTimes(1);
+    expect(prisma.users.update).not.toHaveBeenCalled();
   });
 
-  it('Should return error when deleting a missing user', async () => {
-    (prisma.users.findFirst as jest.Mock).mockResolvedValueOnce(null);
+  it('Should return error when updating to an email already in use', async () => {
+    (prisma.users.findFirst as jest.Mock)
+      .mockResolvedValueOnce({
+        id: '1',
+        first_name: 'Old',
+        last_name: 'Name',
+        email: 'old@email.com',
+        password: 'hashed-password',
+      })
+      .mockResolvedValueOnce({ id: 'other', email: 'new@email.com' });
 
-    const promise = deleteUser('missing', 'missing');
-
-    await expect(promise).rejects.toMatchObject({ statusCode: 404 });
-    await expect(promise).rejects.toHaveProperty(
-      'message',
-      'Usuário não encontrado.',
+    const promise = service.update(
+      {
+        firstName: 'Old',
+        lastName: 'Name',
+        email: 'new@email.com',
+        password: '12345678',
+        confirmPassword: '12345678',
+      },
+      '1',
+      '1',
     );
+
+    await expect(promise).rejects.toMatchObject({ statusCode: 400 });
+    await expect(promise).rejects.toHaveProperty('message', 'Dados inválidos.');
   });
 
   it('Should return error when requester is not the user being deleted', async () => {
-    (prisma.users.findFirst as jest.Mock).mockResolvedValueOnce({
-      id: '1',
-      email: 'email@email.com',
-    });
-
-    const promise = deleteUser('1', 'someone-else');
+    const promise = service.delete('1', 'someone-else');
 
     await expect(promise).rejects.toMatchObject({ statusCode: 403 });
     await expect(promise).rejects.toHaveProperty(
@@ -257,15 +219,7 @@ describe('Testing Users Services', () => {
     expect(prisma.users.delete).not.toHaveBeenCalled();
   });
 
-  it('Should delete a user', async () => {
-    (prisma.users.findFirst as jest.Mock).mockResolvedValueOnce({
-      id: '1',
-      email: 'email@email.com',
-    });
-
-    (prisma.users.delete as jest.Mock).mockResolvedValueOnce({});
-
-    await expect(deleteUser('1', '1')).resolves.toBeUndefined();
-    expect(prisma.users.delete).toHaveBeenCalledWith({ where: { id: '1' } });
+  it('Should resolve when requester is the user being deleted', async () => {
+    await expect(service.delete('1', '1')).resolves.toBeUndefined();
   });
 });

@@ -1,4 +1,4 @@
-import { loginRequestSchema } from '../../interfaces/login-schema';
+import { loginRequestSchema } from '../../src/modules/login/login-schema';
 
 describe('Login Request Schema', () => {
   it('Should accept a valid body', () => {

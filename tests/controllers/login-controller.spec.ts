@@ -1,12 +1,14 @@
-import loginController from '../../controllers/login-controller';
+import loginController from '../../src/modules/login/login-controller';
 
-import * as loginService from '../../services/login-service';
-import { RequestProps } from '../../interfaces/request-props';
-import { LoginRequest } from '../../interfaces/login-request';
+import { service as loginService } from '../../src/modules/login/login-service';
+import { RequestProps } from '../../src/interfaces/request-props';
+import { LoginRequest } from '../../src/interfaces/login-request';
 import { Response } from 'express';
 
-jest.mock('../../services/login-service', () => ({
-  loginUser: jest.fn(),
+jest.mock('../../src/modules/login/login-service', () => ({
+  service: {
+    login: jest.fn(),
+  },
 }));
 
 type MockRes = {
@@ -24,7 +26,7 @@ describe('Testing Login Controller', () => {
   });
 
   it('loginUser returns service result as json', async () => {
-    (loginService.loginUser as jest.Mock).mockResolvedValueOnce({
+    (loginService.login as jest.Mock).mockResolvedValueOnce({
       id: '1',
       email: 'a@a.com',
       token: 't',
@@ -37,7 +39,7 @@ describe('Testing Login Controller', () => {
 
     await loginController.loginUser(req, res as unknown as Response);
 
-    expect(loginService.loginUser).toHaveBeenCalledWith({
+    expect(loginService.login).toHaveBeenCalledWith({
       email: 'a@a.com',
       password: '123',
     });

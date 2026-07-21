@@ -1,17 +1,9 @@
-import prisma from '../../config/prisma';
+import prisma from '../../src/config/prisma';
 
-import {
-  index,
-  show,
-  showPublic,
-  showByEmail,
-  store,
-  update,
-  IDelete,
-} from '../../repositories/users-repository';
-import { CreateUsersProps } from '../../interfaces/users-props';
+import { repository } from '../../src/modules/users/user-repository';
+import { NewUser } from '../../src/types/users-props';
 
-jest.mock('../../config/prisma', () => ({
+jest.mock('../../src/config/prisma', () => ({
   __esModule: true,
   default: {
     users: {
@@ -38,10 +30,10 @@ describe('Testing Users Repository', () => {
     updated_at: true,
   };
 
-  it('index calls prisma.users.findMany with a public select', async () => {
+  it('get calls prisma.users.findMany with a public select', async () => {
     (prisma.users.findMany as jest.Mock).mockResolvedValueOnce([{ id: '1' }]);
 
-    const result = await index();
+    const result = await repository.get();
 
     expect(prisma.users.findMany).toHaveBeenCalledWith({
       select: publicSelect,
@@ -52,7 +44,7 @@ describe('Testing Users Repository', () => {
   it('show calls prisma.users.findFirst with id', async () => {
     (prisma.users.findFirst as jest.Mock).mockResolvedValueOnce({ id: '1' });
 
-    const result = await show('1');
+    const result = await repository.show('1');
 
     expect(prisma.users.findFirst).toHaveBeenCalledWith({ where: { id: '1' } });
     expect(result).toEqual({ id: '1' });
@@ -61,11 +53,11 @@ describe('Testing Users Repository', () => {
   it('showPublic calls prisma.users.findFirst with id and a public select', async () => {
     (prisma.users.findFirst as jest.Mock).mockResolvedValueOnce({ id: '1' });
 
-    const result = await showPublic('1');
+    const result = await repository.showPublic('1');
 
     expect(prisma.users.findFirst).toHaveBeenCalledWith({
-      where: { id: '1' },
       select: publicSelect,
+      where: { id: '1' },
     });
     expect(result).toEqual({ id: '1' });
   });
@@ -76,7 +68,7 @@ describe('Testing Users Repository', () => {
       email: 'a@a.com',
     });
 
-    const result = await showByEmail('a@a.com');
+    const result = await repository.showByEmail('a@a.com');
 
     expect(prisma.users.findFirst).toHaveBeenCalledWith({
       where: { email: 'a@a.com' },
@@ -87,7 +79,7 @@ describe('Testing Users Repository', () => {
   it('store calls prisma.users.create with data', async () => {
     (prisma.users.create as jest.Mock).mockResolvedValueOnce({ id: '1' });
 
-    const user: CreateUsersProps = {
+    const user: NewUser = {
       id: '1',
       first_name: 'A',
       last_name: 'B',
@@ -95,7 +87,7 @@ describe('Testing Users Repository', () => {
       password: 'hashed',
     };
 
-    await store(user);
+    await repository.store(user);
 
     expect(prisma.users.create).toHaveBeenCalledWith({ data: user });
   });
@@ -103,14 +95,14 @@ describe('Testing Users Repository', () => {
   it('update calls prisma.users.update with data and where', async () => {
     (prisma.users.update as jest.Mock).mockResolvedValueOnce({ id: '1' });
 
-    const user: CreateUsersProps = {
+    const user: NewUser = {
       id: '1',
       first_name: 'A',
       last_name: 'B',
       email: 'new@a.com',
       password: 'hashed',
     };
-    await update(user, '1');
+    await repository.update('1', user);
 
     expect(prisma.users.update).toHaveBeenCalledWith({
       data: user,
@@ -118,10 +110,10 @@ describe('Testing Users Repository', () => {
     });
   });
 
-  it('IDelete calls prisma.users.delete with id', async () => {
+  it('delete calls prisma.users.delete with id', async () => {
     (prisma.users.delete as jest.Mock).mockResolvedValueOnce({ id: '1' });
 
-    await IDelete('1');
+    await repository.delete('1');
 
     expect(prisma.users.delete).toHaveBeenCalledWith({ where: { id: '1' } });
   });

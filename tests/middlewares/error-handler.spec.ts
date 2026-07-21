@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { errorHandler } from '../../middleware/error-handler';
-import { HttpError } from '../../utils/http-error';
+import { errorHandler } from '../../src/middleware/error-handler';
+import { HttpError } from '../../src/utils/http-error';
 
 describe('errorHandler middleware', () => {
   const mockReq = {} as Request;

@@ -1,9 +1,9 @@
 import jwt from 'jsonwebtoken';
 
-import { loginUser } from '../../services/login-service';
-import { LoginRequest } from '../../interfaces/login-request';
+import { service } from '../../src/modules/login/login-service';
+import { LoginRequest } from '../../src/interfaces/login-request';
 
-jest.mock('../../config/env', () => ({
+jest.mock('../../src/config/env', () => ({
   __esModule: true,
   default: {
     TOKEN_SECRET: 'test-secret',
@@ -12,11 +12,13 @@ jest.mock('../../config/env', () => ({
   },
 }));
 
-jest.mock('../../repositories/users-repository', () => ({
-  showByEmail: jest.fn(),
+jest.mock('../../src/modules/users/user-repository', () => ({
+  repository: {
+    showByEmail: jest.fn(),
+  },
 }));
 
-jest.mock('../../utils/password-is-valid', () => ({
+jest.mock('../../src/utils/password-is-valid', () => ({
   passwordIsValid: jest.fn(),
 }));
 
@@ -33,11 +35,13 @@ describe('Testing Login Service', () => {
   });
 
   it('Should throw 401 when user does not exist', async () => {
-    const usersRepository = await import('../../repositories/users-repository');
+    const { repository: usersRepository } = await import(
+      '../../src/modules/users/user-repository'
+    );
     (usersRepository.showByEmail as jest.Mock).mockResolvedValueOnce(null);
 
     const body: LoginRequest = { email: 'a@a.com', password: '12345678' };
-    const promise = loginUser(body);
+    const promise = service.login(body);
 
     await expect(promise).rejects.toMatchObject({ statusCode: 401 });
     await expect(promise).rejects.toHaveProperty(
@@ -47,8 +51,10 @@ describe('Testing Login Service', () => {
   });
 
   it('Should throw 401 when password is invalid', async () => {
-    const usersRepository = await import('../../repositories/users-repository');
-    const passwordUtil = await import('../../utils/password-is-valid');
+    const { repository: usersRepository } = await import(
+      '../../src/modules/users/user-repository'
+    );
+    const passwordUtil = await import('../../src/utils/password-is-valid');
 
     (usersRepository.showByEmail as jest.Mock).mockResolvedValueOnce({
       id: '1',
@@ -58,7 +64,7 @@ describe('Testing Login Service', () => {
     (passwordUtil.passwordIsValid as jest.Mock).mockReturnValueOnce(false);
 
     const body: LoginRequest = { email: 'a@a.com', password: 'wrong' };
-    const promise = loginUser(body);
+    const promise = service.login(body);
 
     await expect(promise).rejects.toMatchObject({ statusCode: 401 });
     await expect(promise).rejects.toHaveProperty(
@@ -68,8 +74,10 @@ describe('Testing Login Service', () => {
   });
 
   it('Should login user and return token', async () => {
-    const usersRepository = await import('../../repositories/users-repository');
-    const passwordUtil = await import('../../utils/password-is-valid');
+    const { repository: usersRepository } = await import(
+      '../../src/modules/users/user-repository'
+    );
+    const passwordUtil = await import('../../src/utils/password-is-valid');
 
     (usersRepository.showByEmail as jest.Mock).mockResolvedValueOnce({
       id: '1',
@@ -81,7 +89,7 @@ describe('Testing Login Service', () => {
     (jwt.sign as jest.Mock).mockReturnValueOnce('signed-token');
 
     const body: LoginRequest = { email: 'a@a.com', password: '12345678' };
-    const result = await loginUser(body);
+    const result = await service.login(body);
 
     expect(jwt.sign).toHaveBeenCalledWith(
       { id: '1', email: 'a@a.com' },

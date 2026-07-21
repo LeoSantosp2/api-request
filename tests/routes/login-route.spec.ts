@@ -6,7 +6,7 @@ describe('Testing Login Routes', () => {
   it('exports an express router with routes registered', () => {
     jest.resetModules();
 
-    jest.doMock('../../config/env', () => ({
+    jest.doMock('../../src/config/env', () => ({
       __esModule: true,
       default: {
         TOKEN_SECRET: 'test-secret',
@@ -14,7 +14,7 @@ describe('Testing Login Routes', () => {
       },
     }));
 
-    return import('../../routes/login-route').then(
+    return import('../../src/modules/login/login-route').then(
       ({ default: loginRouter }) => {
         expect(loginRouter).toBeDefined();
         expect(

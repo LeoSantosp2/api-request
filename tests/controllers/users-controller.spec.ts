@@ -1,17 +1,18 @@
-import usersController from '../../controllers/users-controller';
+import { usersController } from '../../src/modules/users/user-controller';
 
-import * as usersService from '../../services/users-service';
-import { RequestProps } from '../../interfaces/request-props';
-import { UserRequestProps } from '../../interfaces/users-props';
+import { service as usersService } from '../../src/modules/users/user-service';
+import { RequestProps } from '../../src/interfaces/request-props';
+import { UserRequest } from '../../src/types/users-props';
 import { Response } from 'express';
-import { UsersBodyProps } from '../../types/users-body-props';
 
-jest.mock('../../services/users-service', () => ({
-  listAll: jest.fn(),
-  listOne: jest.fn(),
-  create: jest.fn(),
-  updateUser: jest.fn(),
-  deleteUser: jest.fn(),
+jest.mock('../../src/modules/users/user-service', () => ({
+  service: {
+    listAll: jest.fn(),
+    listOne: jest.fn(),
+    create: jest.fn(),
+    update: jest.fn(),
+    delete: jest.fn(),
+  },
 }));
 
 type MockRes = {
@@ -31,36 +32,36 @@ describe('Testing Users Controller', () => {
     jest.clearAllMocks();
   });
 
-  it('listAll returns users as json', async () => {
+  it('GET returns users as json', async () => {
     (usersService.listAll as jest.Mock).mockResolvedValueOnce([{ id: '1' }]);
 
     const res = createMockRes();
     const req = {} as RequestProps;
 
-    await usersController.listAll(req, res as unknown as Response);
+    await usersController.GET(req, res as unknown as Response);
 
     expect(res.json).toHaveBeenCalledWith([{ id: '1' }]);
   });
 
-  it('listOne returns user as json', async () => {
+  it('SHOW returns user as json', async () => {
     (usersService.listOne as jest.Mock).mockResolvedValueOnce({ id: '1' });
 
     const res = createMockRes();
     const req = { params: { id: '1' } } as unknown as RequestProps;
 
-    await usersController.listOne(req, res as unknown as Response);
+    await usersController.SHOW(req, res as unknown as Response);
 
     expect(usersService.listOne).toHaveBeenCalledWith('1');
     expect(res.json).toHaveBeenCalledWith({ id: '1' });
   });
 
-  it('create returns 201 and success message', async () => {
+  it('POST returns 201 and success message', async () => {
     (usersService.create as jest.Mock).mockResolvedValueOnce(undefined);
 
     const res = createMockRes();
-    const req = { body: {} } as RequestProps<UserRequestProps>;
+    const req = { body: {} } as RequestProps<UserRequest>;
 
-    await usersController.create(req, res as unknown as Response);
+    await usersController.POST(req, res as unknown as Response);
 
     expect(res.status).toHaveBeenCalledWith(201);
     expect(res.status().json).toHaveBeenCalledWith({
@@ -69,39 +70,39 @@ describe('Testing Users Controller', () => {
     });
   });
 
-  it('updateUser returns 200 and success message', async () => {
-    (usersService.updateUser as jest.Mock).mockResolvedValueOnce(undefined);
+  it('PUT returns 200 and success message', async () => {
+    (usersService.update as jest.Mock).mockResolvedValueOnce(undefined);
 
     const res = createMockRes();
     const req = {
       params: { id: '1' },
       body: {},
       userId: '1',
-    } as unknown as RequestProps<UserRequestProps>;
+    } as unknown as RequestProps<UserRequest>;
 
-    await usersController.updateUser(req, res as unknown as Response);
+    await usersController.PUT(req, res as unknown as Response);
 
-    expect(usersService.updateUser).toHaveBeenCalledWith({}, '1', '1');
+    expect(usersService.update).toHaveBeenCalledWith({}, '1', '1');
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.status().json).toHaveBeenCalledWith({
       status: 'success',
-      message: 'Usuário atualizado com sucesso.',
+      message: 'Usuário editado com sucesso.',
     });
   });
 
-  it('deleteUser returns 200 and success message', async () => {
-    (usersService.deleteUser as jest.Mock).mockResolvedValueOnce(undefined);
+  it('DELETE returns 200 and success message', async () => {
+    (usersService.delete as jest.Mock).mockResolvedValueOnce(undefined);
 
     const res = createMockRes();
     const req = {
       params: { id: '1' },
-      body: {} as UsersBodyProps,
+      body: undefined,
       userId: '1',
-    } as unknown as RequestProps<UsersBodyProps>;
+    } as unknown as RequestProps;
 
-    await usersController.deleteUser(req, res as unknown as Response);
+    await usersController.DELETE(req, res as unknown as Response);
 
-    expect(usersService.deleteUser).toHaveBeenCalledWith('1', '1');
+    expect(usersService.delete).toHaveBeenCalledWith('1', '1');
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.status().json).toHaveBeenCalledWith({
       status: 'success',
