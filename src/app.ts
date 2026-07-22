@@ -1,5 +1,6 @@
 import express from 'express';
 import swaggerUi from 'swagger-ui-express';
+import cors, { CorsOptions } from 'cors';
 import 'dotenv/config';
 import 'express-async-errors';
 
@@ -9,6 +10,10 @@ import loginRouter from './modules/login/login-route';
 import { generateOpenApiDocument } from './docs/generate-document';
 
 import { errorHandler } from './middleware/error-handler';
+
+const corsOptions: CorsOptions = {
+  origin: ['http://localhost:3000'],
+};
 
 class App {
   public app: express.Application;
@@ -23,6 +28,7 @@ class App {
   middlewares() {
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(express.json());
+    this.app.use(cors(corsOptions));
   }
 
   routes() {
