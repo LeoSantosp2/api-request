@@ -13,7 +13,7 @@ export const usersController = {
   },
 
   async SHOW(req: RequestProps, res: Response) {
-    const user = await service.listOne(req.params.id);
+    const user = await service.listOne(req.params.id, req.userId);
 
     return res.json(user);
   },

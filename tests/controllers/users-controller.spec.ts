@@ -40,6 +40,7 @@ describe('Testing Users Controller', () => {
 
     await usersController.GET(req, res as unknown as Response);
 
+    expect(usersService.listAll).toHaveBeenCalledTimes(1);
     expect(res.json).toHaveBeenCalledWith([{ id: '1' }]);
   });
 
@@ -47,11 +48,11 @@ describe('Testing Users Controller', () => {
     (usersService.listOne as jest.Mock).mockResolvedValueOnce({ id: '1' });
 
     const res = createMockRes();
-    const req = { params: { id: '1' } } as unknown as RequestProps;
+    const req = { params: { id: '1' }, userId: '1' } as unknown as RequestProps;
 
     await usersController.SHOW(req, res as unknown as Response);
 
-    expect(usersService.listOne).toHaveBeenCalledWith('1');
+    expect(usersService.listOne).toHaveBeenCalledWith('1', '1');
     expect(res.json).toHaveBeenCalledWith({ id: '1' });
   });
 

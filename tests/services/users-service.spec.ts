@@ -47,7 +47,7 @@ describe('Testing Users Services', () => {
       email: 'leonardo@email.com',
     });
 
-    const user = await service.listOne('1');
+    const user = await service.listOne('1', '1');
 
     expect(user).toEqual({
       id: '1',
@@ -56,10 +56,21 @@ describe('Testing Users Services', () => {
     });
   });
 
+  it('Should return error when listing a user other than the requester', async () => {
+    const promise = service.listOne('1', 'someone-else');
+
+    await expect(promise).rejects.toMatchObject({ statusCode: 403 });
+    await expect(promise).rejects.toHaveProperty(
+      'message',
+      'Você não tem permissão para listar este usuário.',
+    );
+    expect(prisma.users.findFirst).not.toHaveBeenCalled();
+  });
+
   it('Should return error "404 - Usuário não encontrado"', async () => {
     (prisma.users.findFirst as jest.Mock).mockResolvedValueOnce(null);
 
-    const promise = service.listOne('2');
+    const promise = service.listOne('2', '2');
 
     await expect(promise).rejects.toBeInstanceOf(HttpError);
     await expect(promise).rejects.toMatchObject({ statusCode: 404 });
@@ -155,7 +166,7 @@ describe('Testing Users Services', () => {
     );
   });
 
-  it('Should update a user in place without persisting via the repository', async () => {
+  it('Should update a user and persist the change via the repository', async () => {
     (prisma.users.findFirst as jest.Mock).mockResolvedValueOnce({
       id: '1',
       first_name: 'Old',
@@ -163,6 +174,7 @@ describe('Testing Users Services', () => {
       email: 'old@email.com',
       password: 'hashed-password',
     });
+    (prisma.users.update as jest.Mock).mockResolvedValueOnce({});
 
     await expect(
       service.update(
@@ -178,7 +190,16 @@ describe('Testing Users Services', () => {
       ),
     ).resolves.toBeUndefined();
 
-    expect(prisma.users.update).not.toHaveBeenCalled();
+    expect(prisma.users.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: '1' },
+        data: expect.objectContaining({
+          first_name: 'New',
+          last_name: 'Name',
+          email: 'old@email.com',
+        }),
+      }),
+    );
   });
 
   it('Should return error when updating to an email already in use', async () => {
@@ -219,7 +240,11 @@ describe('Testing Users Services', () => {
     expect(prisma.users.delete).not.toHaveBeenCalled();
   });
 
-  it('Should resolve when requester is the user being deleted', async () => {
+  it('Should delete the user and persist the change via the repository', async () => {
+    (prisma.users.delete as jest.Mock).mockResolvedValueOnce({});
+
     await expect(service.delete('1', '1')).resolves.toBeUndefined();
+
+    expect(prisma.users.delete).toHaveBeenCalledWith({ where: { id: '1' } });
   });
 });

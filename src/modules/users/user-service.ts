@@ -14,7 +14,14 @@ export const service = {
     return users;
   },
 
-  async listOne(id: string) {
+  async listOne(id: string, userId?: string) {
+    if (id !== userId) {
+      throw new HttpError(
+        403,
+        'Você não tem permissão para listar este usuário.',
+      );
+    }
+
     const user = await repository.showPublic(id);
 
     if (!user) {
@@ -77,6 +84,8 @@ export const service = {
     if (!compareSync(user.password, currentUser.password)) {
       currentUser.password = hashSync(user.password, 8);
     }
+
+    await repository.update(id, currentUser);
   },
 
   async delete(id: string, userId?: string) {
@@ -86,5 +95,7 @@ export const service = {
         'Você não tem permissão para deletar este usuário.',
       );
     }
+
+    await repository.delete(id);
   },
 };
