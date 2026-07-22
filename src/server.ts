@@ -5,7 +5,7 @@ import prisma from './config/prisma';
 
 import logger from './utils/logger';
 
-const PORT = env.API_PORT || 3000;
+const PORT = env.API_PORT || 3333;
 
 const server = app.listen(PORT, () => {
   logger.success(

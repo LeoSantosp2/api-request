@@ -37,6 +37,7 @@ Api-request is an example of API REST created with NodeJS and TypeScript. This p
 - ✅ Error handling
 - ✅ Swagger/OpenAPI Documentation
 - ✅ Automatic database migrations
+- ✅ CORS configuration
 
 ## Requirements
 - [NodeJS](https://nodejs.org/en) v18.20.2 or higher
@@ -44,10 +45,10 @@ Api-request is an example of API REST created with NodeJS and TypeScript. This p
 - A tool to http request. For example [Insomnia](https://insomnia.rest/download), [Postman](https://www.postman.com/) or the extension to Visual Studio Code [REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client)
 
 ## Routes
-- URL base: `http://localhost:3000`
-- Users route: `http://localhost:3000/api/users`
-- Login route: `http://localhost:3000/api/login`
-- Endpoint docs: `http://localhost:3000/api/docs`
+- URL base: `http://localhost:3333`
+- Users route: `http://localhost:3333/api/users`
+- Login route: `http://localhost:3333/api/login`
+- Endpoint docs: `http://localhost:3333/api/docs`
 
 ## Installation
 
@@ -81,7 +82,7 @@ The `.env` file must follow the same variables from `.env.example`
 ### Example:
 ```env
 # API CONFIGURATIONS
-API_PORT=3000
+API_PORT=3333
 NODE_ENV=development
 
 # DATABASE CONFIGURATIONS
@@ -100,7 +101,7 @@ TOKEN_EXPIRATION=7d
 ### Variables description
 | Variables | Description | Example |
 |----------|-----------|---------|
-| `API_PORT` | API port | `3000` |
+| `API_PORT` | API port | `3333` |
 | `NODE_ENV` | Runtime environment | `development`, `production` or `test` |
 | `DATABASE` | Database Name | `database` |
 | `DATABASE_HOST` | Server host MySQL | `127.0.0.1` or `localhost` |
@@ -145,6 +146,17 @@ npm run test:coverage
 
 ## Configuration
 
+### CORS
+The API only accepts cross-origin requests from allowed origins, configured in `src/app.ts`:
+
+```ts
+const corsOptions: CorsOptions = {
+  origin: ['http://localhost:3000'],
+};
+```
+
+To allow a different frontend origin, add it to the `origin` array.
+
 ### Database
 The project use prisma ORM. The schema of the database is in `prisma/schema.prisma`.
 
@@ -158,7 +170,7 @@ The API documentation is generated with [`@asteasolutions/zod-to-openapi`](https
 
 The interactive documentation of the endpoints is available in:
 ```
-http://localhost:3000/api/docs
+http://localhost:3333/api/docs
 ```
 
 ## Authentication
@@ -176,7 +188,7 @@ This API uses **JWT (JSON Web Tokens)** to authentication.
 ### Example with curl
 ```bash
 # 1. Login and get token
-curl -X POST http://localhost:3000/api/login \
+curl -X POST http://localhost:3333/api/login \
   -H "Content-Type: application/json" \
   -d '{"email":"john@example.com","password":"password123"}'
 
@@ -187,7 +199,7 @@ curl -X POST http://localhost:3000/api/login \
 # }
 
 # 2. Use token to access protected endpoints
-curl http://localhost:3000/api/users \
+curl http://localhost:3333/api/users \
   -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 ```
 
@@ -213,7 +225,7 @@ This command uses **Nodemon** to automatically restart when code changes.
 **Success:**
 ![DevSuccess](./assets/dev-success.png)
 
-The API is available in `http://localhost:3000`
+The API is available in `http://localhost:3333`
 
 ### Available scripts
 | Script | Description |
