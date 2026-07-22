@@ -123,7 +123,7 @@ npx prisma migrate dev
 
 This project includes **unit tests** for the main layers (**repositories**, **services**, **controllers**, **middlewares**, **routes**) and utilities.
 
-- Tests location: `src/__tests__`
+- Tests location: `tests/`
 - Runner: `jest` + `ts-jest`
 - Coverage threshold: **80% global** (see `jest.config.js`)
 
