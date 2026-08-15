@@ -23,9 +23,8 @@ describe('Testing Server bootstrap', () => {
       },
     }));
 
-    jest.doMock('../src/config/prisma', () => ({
-      __esModule: true,
-      default: { $disconnect: jest.fn() },
+    jest.doMock('../src/infrastructure/database/prisma.config', () => ({
+      prisma: { $disconnect: jest.fn() },
     }));
 
     const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
@@ -54,9 +53,8 @@ describe('Testing Server bootstrap', () => {
       default: { API_PORT: '3333' },
     }));
 
-    jest.doMock('../src/config/prisma', () => ({
-      __esModule: true,
-      default: { $disconnect: jest.fn() },
+    jest.doMock('../src/infrastructure/database/prisma.config', () => ({
+      prisma: { $disconnect: jest.fn() },
     }));
 
     jest.spyOn(console, 'log').mockImplementation(() => {});
@@ -97,9 +95,8 @@ describe('Testing Server bootstrap', () => {
       default: { API_PORT: '3333' },
     }));
 
-    jest.doMock('../src/config/prisma', () => ({
-      __esModule: true,
-      default: { $disconnect: jest.fn() },
+    jest.doMock('../src/infrastructure/database/prisma.config', () => ({
+      prisma: { $disconnect: jest.fn() },
     }));
 
     jest.spyOn(console, 'log').mockImplementation(() => {});
@@ -145,9 +142,8 @@ describe('Testing Server bootstrap', () => {
       default: { API_PORT: '3333' },
     }));
 
-    jest.doMock('../src/config/prisma', () => ({
-      __esModule: true,
-      default: { $disconnect: disconnect },
+    jest.doMock('../src/infrastructure/database/prisma.config', () => ({
+      prisma: { $disconnect: disconnect },
     }));
 
     jest.spyOn(console, 'log').mockImplementation(() => {});

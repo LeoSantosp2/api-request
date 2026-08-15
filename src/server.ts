@@ -1,16 +1,15 @@
 import app from './app';
 
 import env from './config/env';
-import prisma from './config/prisma';
+
+import { prisma } from './infrastructure/database/prisma.config';
 
 import logger from './utils/logger';
 
 const PORT = env.API_PORT || 3333;
 
 const server = app.listen(PORT, () => {
-  logger.success(
-    `server running at http://localhost:${PORT} [${env.NODE_ENV}]`,
-  );
+  logger.success(`server is running on PORT ${PORT} [${env.NODE_ENV}]`);
 });
 
 server.on('error', (error: NodeJS.ErrnoException) => {

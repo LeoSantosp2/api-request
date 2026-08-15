@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { userRequestSchema } from '../modules/users/user-schema';
+import { userRequestSchema } from '../domain/users/user.schema';
 
 import { bearerAuth, registry } from './registry';
 import { errorResponseSchema, successMessageSchema } from './common';
@@ -64,6 +64,10 @@ registry.registerPath({
       description: 'Autenticação obrigatória.',
       content: { 'application/json': { schema: errorResponseSchema } },
     },
+    403: {
+      description: 'Sem permissão para listar este usuário.',
+      content: { 'application/json': { schema: errorResponseSchema } },
+    },
     404: {
       description: 'Usuário não encontrado.',
       content: { 'application/json': { schema: errorResponseSchema } },
@@ -113,9 +117,8 @@ registry.registerPath({
     },
   },
   responses: {
-    200: {
+    204: {
       description: 'Usuário atualizado com sucesso.',
-      content: { 'application/json': { schema: successMessageSchema } },
     },
     400: {
       description: 'Dados inválidos ou email já cadastrado.',
@@ -151,9 +154,8 @@ registry.registerPath({
     }),
   },
   responses: {
-    200: {
+    204: {
       description: 'Usuário deletado com sucesso.',
-      content: { 'application/json': { schema: successMessageSchema } },
     },
     401: {
       description: 'Autenticação obrigatória.',

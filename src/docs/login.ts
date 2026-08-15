@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { loginRequestSchema } from '../modules/login/login-schema';
+import { loginRequestSchema } from '../domain/login/login.schema';
 
 import { registry } from './registry';
 import { errorResponseSchema } from './common';
