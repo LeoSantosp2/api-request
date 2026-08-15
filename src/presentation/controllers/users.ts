@@ -6,7 +6,7 @@ import { CreateUseCase } from '../../application/users/create.useCase';
 import { UpdateUseCase } from '../../application/users/update.useCase';
 import { DeleteUseCase } from '../../application/users/delete.useCase';
 
-import { UserRequestData } from '../../domain/users/users';
+import { UserRequestData } from '../../domain/users/user';
 
 import { RequestProps } from '../../interfaces/request-props';
 

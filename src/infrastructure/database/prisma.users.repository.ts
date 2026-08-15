@@ -4,7 +4,7 @@ import {
   CreateUserData,
   UpdateUserData,
   UserRepository,
-} from '../../domain/users/users';
+} from '../../domain/users/user';
 
 const publicSelect = {
   id: true,

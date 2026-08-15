@@ -1,4 +1,4 @@
-import { UserRepository } from '../../domain/users/users';
+import { UserRepository } from '../../domain/users/user';
 
 import { HttpError } from '../../utils/http-error';
 

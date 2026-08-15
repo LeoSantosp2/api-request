@@ -2,7 +2,7 @@ import jwt, { SignOptions } from 'jsonwebtoken';
 
 import env from '../../config/env';
 
-import { UserRepository } from '../../domain/users/users';
+import { UserRepository } from '../../domain/users/user';
 
 import { HttpError } from '../../utils/http-error';
 import { comparePassword } from '../../utils/compare.password';
