@@ -1,4 +1,4 @@
 import { compareSync } from 'bcrypt';
 
-export const passwordIsValid = (password: string, passwordHash: string) =>
+export const comparePassword = (password: string, passwordHash: string) =>
   compareSync(password, passwordHash);
