@@ -2,7 +2,7 @@ import { Router } from 'express';
 
 type RouterWithStack = Router & { stack: unknown[] };
 
-describe('Testing Users Routes', () => {
+describe('Testing Login Routes', () => {
   it('exports an express router with routes registered', () => {
     jest.resetModules();
 
@@ -14,17 +14,16 @@ describe('Testing Users Routes', () => {
       },
     }));
 
-    jest.doMock('../../src/config/prisma', () => ({
-      __esModule: true,
-      default: {},
+    jest.doMock('../../src/infraestructure/database/prisma.config', () => ({
+      prisma: {},
     }));
 
-    return import('../../src/modules/users/user-router').then(
-      ({ default: usersRouter }) => {
-        expect(usersRouter).toBeDefined();
+    return import('../../src/presentation/routes/login').then(
+      ({ default: loginRouter }) => {
+        expect(loginRouter).toBeDefined();
         expect(
-          (usersRouter as RouterWithStack).stack.length,
-        ).toBeGreaterThanOrEqual(5);
+          (loginRouter as RouterWithStack).stack.length,
+        ).toBeGreaterThanOrEqual(1);
       },
     );
   });

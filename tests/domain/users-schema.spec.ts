@@ -1,4 +1,4 @@
-import { userRequestSchema } from '../../src/modules/users/user-schema';
+import { userRequestSchema } from '../../src/domain/users/user.schema';
 
 describe('User Request Schema', () => {
   const validBody = {

@@ -1,11 +1,10 @@
-import prisma from '../../src/config/prisma';
+import { prisma } from '../../src/infraestructure/database/prisma.config';
 
-import { repository } from '../../src/modules/users/user-repository';
-import { NewUser } from '../../src/types/users-props';
+import { PrismaRepository } from '../../src/infraestructure/database/prisma.users.repository';
+import { CreateUserData, UpdateUserData } from '../../src/domain/users/users';
 
-jest.mock('../../src/config/prisma', () => ({
-  __esModule: true,
-  default: {
+jest.mock('../../src/infraestructure/database/prisma.config', () => ({
+  prisma: {
     users: {
       findMany: jest.fn(),
       findFirst: jest.fn(),
@@ -16,10 +15,8 @@ jest.mock('../../src/config/prisma', () => ({
   },
 }));
 
-describe('Testing Users Repository', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
+describe('Testing PrismaRepository', () => {
+  const repository = new PrismaRepository();
 
   const publicSelect = {
     id: true,
@@ -30,10 +27,14 @@ describe('Testing Users Repository', () => {
     updated_at: true,
   };
 
-  it('get calls prisma.users.findMany with a public select', async () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('listAll calls prisma.users.findMany with a public select', async () => {
     (prisma.users.findMany as jest.Mock).mockResolvedValueOnce([{ id: '1' }]);
 
-    const result = await repository.get();
+    const result = await repository.listAll();
 
     expect(prisma.users.findMany).toHaveBeenCalledWith({
       select: publicSelect,
@@ -41,19 +42,21 @@ describe('Testing Users Repository', () => {
     expect(result).toEqual([{ id: '1' }]);
   });
 
-  it('show calls prisma.users.findFirst with id', async () => {
+  it('listOne calls prisma.users.findFirst with id', async () => {
     (prisma.users.findFirst as jest.Mock).mockResolvedValueOnce({ id: '1' });
 
-    const result = await repository.show('1');
+    const result = await repository.listOne('1');
 
-    expect(prisma.users.findFirst).toHaveBeenCalledWith({ where: { id: '1' } });
+    expect(prisma.users.findFirst).toHaveBeenCalledWith({
+      where: { id: '1' },
+    });
     expect(result).toEqual({ id: '1' });
   });
 
-  it('showPublic calls prisma.users.findFirst with id and a public select', async () => {
+  it('listPublic calls prisma.users.findFirst with id and a public select', async () => {
     (prisma.users.findFirst as jest.Mock).mockResolvedValueOnce({ id: '1' });
 
-    const result = await repository.showPublic('1');
+    const result = await repository.listPublic('1');
 
     expect(prisma.users.findFirst).toHaveBeenCalledWith({
       select: publicSelect,
@@ -76,10 +79,10 @@ describe('Testing Users Repository', () => {
     expect(result).toEqual({ id: '1', email: 'a@a.com' });
   });
 
-  it('store calls prisma.users.create with data', async () => {
+  it('create calls prisma.users.create with data', async () => {
     (prisma.users.create as jest.Mock).mockResolvedValueOnce({ id: '1' });
 
-    const user: NewUser = {
+    const user: CreateUserData = {
       id: '1',
       first_name: 'A',
       last_name: 'B',
@@ -87,7 +90,7 @@ describe('Testing Users Repository', () => {
       password: 'hashed',
     };
 
-    await repository.store(user);
+    await repository.create(user);
 
     expect(prisma.users.create).toHaveBeenCalledWith({ data: user });
   });
@@ -95,8 +98,7 @@ describe('Testing Users Repository', () => {
   it('update calls prisma.users.update with data and where', async () => {
     (prisma.users.update as jest.Mock).mockResolvedValueOnce({ id: '1' });
 
-    const user: NewUser = {
-      id: '1',
+    const user: UpdateUserData = {
       first_name: 'A',
       last_name: 'B',
       email: 'new@a.com',
