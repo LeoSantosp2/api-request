@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import { PrismaRepository } from '../../infraestructure/database/prisma.users.repository';
+import { PrismaRepository } from '../../infrastructure/database/prisma.users.repository';
 
 import { ListAllUseCase } from '../../application/users/listAll.useCase';
 import { CreateUseCase } from '../../application/users/create.useCase';

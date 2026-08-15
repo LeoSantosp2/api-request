@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import { PrismaRepository } from '../../infraestructure/database/prisma.users.repository';
+import { PrismaRepository } from '../../infrastructure/database/prisma.users.repository';
 
 import { LoginUseCase } from '../../application/login/login.useCase';
 
