@@ -1,7 +1,8 @@
 import app from './app';
 
 import env from './config/env';
-import prisma from './config/prisma';
+
+import { prisma } from './infrastructure/database/prisma.config';
 
 import logger from './utils/logger';
 
