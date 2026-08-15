@@ -4,8 +4,8 @@ import cors, { CorsOptions } from 'cors';
 import 'dotenv/config';
 import 'express-async-errors';
 
-import usersRouter from './modules/users/user-router';
-import loginRouter from './modules/login/login-route';
+import usersRouter from './presentation/routes/users';
+import loginRouter from './presentation/routes/login';
 
 import { generateOpenApiDocument } from './docs/generate-document';
 
