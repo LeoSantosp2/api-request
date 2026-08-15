@@ -12,7 +12,6 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "module": "commonjs",
-    "rootDir": "./src",
     "allowJs": true,
     "sourceMap": true,
     "outDir": "./dist",
@@ -24,6 +23,7 @@
     "skipLibCheck": true
   },
   "include": [
-    "./src"
+    "./src",
+    "./tests"
   ]
 }
