@@ -11,6 +11,7 @@ const envSchema = z.object({
   API_PORT: z.string(),
   NODE_ENV: z.enum(['development', 'production', 'test']),
   DATABASE_URL: z.string(),
+  CORS_ORIGIN: z.string(),
 });
 
 export default envSchema.parse(process.env);

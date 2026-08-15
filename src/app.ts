@@ -4,6 +4,8 @@ import cors, { CorsOptions } from 'cors';
 import 'dotenv/config';
 import 'express-async-errors';
 
+import env from './config/env';
+
 import usersRouter from './presentation/routes/users';
 import loginRouter from './presentation/routes/login';
 
@@ -12,7 +14,7 @@ import { generateOpenApiDocument } from './docs/generate.document';
 import { errorHandler } from './middleware/error.handler';
 
 const corsOptions: CorsOptions = {
-  origin: ['http://localhost:3000'],
+  origin: env.CORS_ORIGIN.split(',').map((origin) => origin.trim()),
 };
 
 class App {

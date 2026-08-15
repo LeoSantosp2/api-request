@@ -84,6 +84,7 @@ The `.env` file must follow the same variables from `.env.example`
 # API CONFIGURATIONS
 API_PORT=3333
 NODE_ENV=development
+CORS_ORIGIN=http://localhost:3000
 
 # DATABASE CONFIGURATIONS
 DATABASE=database
@@ -103,6 +104,7 @@ TOKEN_EXPIRATION=7d
 |----------|-----------|---------|
 | `API_PORT` | API port | `3333` |
 | `NODE_ENV` | Runtime environment | `development`, `production` or `test` |
+| `CORS_ORIGIN` | Comma-separated list of allowed CORS origins | `http://localhost:3000,http://localhost:3001` |
 | `DATABASE` | Database Name | `database` |
 | `DATABASE_HOST` | Server host MySQL | `127.0.0.1` or `localhost` |
 | `DATABASE_PORT` | MySQL port | `3306` |
@@ -147,15 +149,13 @@ npm run test:coverage
 ## Configuration
 
 ### CORS
-The API only accepts cross-origin requests from allowed origins, configured in `src/app.ts`:
+The API only accepts cross-origin requests from allowed origins, configured through the `CORS_ORIGIN` environment variable (see [Configuration](#configuration) table above):
 
-```ts
-const corsOptions: CorsOptions = {
-  origin: ['http://localhost:3000'],
-};
+```env
+CORS_ORIGIN=http://localhost:3000,http://localhost:3001
 ```
 
-To allow a different frontend origin, add it to the `origin` array.
+To allow a different frontend origin, add it to the comma-separated list in `.env`.
 
 ### Database
 The project use prisma ORM. The schema of the database is in `prisma/schema.prisma`.
