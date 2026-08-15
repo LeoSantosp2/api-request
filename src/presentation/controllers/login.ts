@@ -4,7 +4,7 @@ import { LoginRequestData } from '../../domain/login/login';
 
 import { LoginUseCase } from '../../application/login/login.useCase';
 
-import { RequestProps } from '../../interfaces/request-props';
+import { RequestProps } from '../../interfaces/request.props';
 
 export class LoginController {
   constructor(protected readonly loginUseCase: LoginUseCase) {}

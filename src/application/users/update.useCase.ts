@@ -1,6 +1,6 @@
 import { UserRepository, UserRequestData } from '../../domain/users/user';
 
-import { HttpError } from '../../utils/http-error';
+import { HttpError } from '../../utils/http.error';
 import { hashPassword } from '../../utils/hash.password';
 import { comparePassword } from '../../utils/compare.password';
 

@@ -3,7 +3,7 @@ import { mock, MockProxy } from 'jest-mock-extended';
 
 import { LoginUseCase } from '../../src/application/login/login.useCase';
 import { UserRepository } from '../../src/domain/users/users';
-import { HttpError } from '../../src/utils/http-error';
+import { HttpError } from '../../src/utils/http.error';
 
 jest.mock('../../src/config/env', () => ({
   __esModule: true,

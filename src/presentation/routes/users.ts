@@ -12,8 +12,8 @@ import { userRequestSchema } from '../../domain/users/user.schema';
 
 import { UsersController } from '../controllers/users';
 
-import { loginRequired } from '../../middleware/login-required';
-import { validateBody } from '../../middleware/validate-body';
+import { loginRequired } from '../../middleware/login.required';
+import { validateBody } from '../../middleware/validate.body';
 
 const userRepository = new PrismaRepository();
 

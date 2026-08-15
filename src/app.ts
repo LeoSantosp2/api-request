@@ -7,9 +7,9 @@ import 'express-async-errors';
 import usersRouter from './presentation/routes/users';
 import loginRouter from './presentation/routes/login';
 
-import { generateOpenApiDocument } from './docs/generate-document';
+import { generateOpenApiDocument } from './docs/generate.document';
 
-import { errorHandler } from './middleware/error-handler';
+import { errorHandler } from './middleware/error.handler';
 
 const corsOptions: CorsOptions = {
   origin: ['http://localhost:3000'],

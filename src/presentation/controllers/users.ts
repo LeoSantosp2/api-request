@@ -8,7 +8,7 @@ import { DeleteUseCase } from '../../application/users/delete.useCase';
 
 import { UserRequestData } from '../../domain/users/user';
 
-import { RequestProps } from '../../interfaces/request-props';
+import { RequestProps } from '../../interfaces/request.props';
 
 export class UsersController {
   constructor(

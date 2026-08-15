@@ -4,7 +4,7 @@ import env from '../../config/env';
 
 import { UserRepository } from '../../domain/users/user';
 
-import { HttpError } from '../../utils/http-error';
+import { HttpError } from '../../utils/http.error';
 import { comparePassword } from '../../utils/compare.password';
 
 export class LoginUseCase {

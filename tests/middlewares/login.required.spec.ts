@@ -4,9 +4,9 @@ import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 
 import env from '../../src/config/env';
-import { loginRequired } from '../../src/middleware/login-required';
-import { HttpError } from '../../src/utils/http-error';
-import { RequestProps } from '../../src/interfaces/request-props';
+import { loginRequired } from '../../src/middleware/login.required';
+import { HttpError } from '../../src/utils/http.error';
+import { RequestProps } from '../../src/interfaces/request.props';
 
 describe('Login Required Middleware', () => {
   const mockRequest = (headers?: Record<string, string>) =>

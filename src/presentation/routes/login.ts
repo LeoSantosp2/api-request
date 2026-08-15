@@ -6,7 +6,7 @@ import { LoginUseCase } from '../../application/login/login.useCase';
 
 import { LoginController } from '../controllers/login';
 
-import { validateBody } from '../../middleware/validate-body';
+import { validateBody } from '../../middleware/validate.body';
 
 import { loginRequestSchema } from '../../domain/login/login.schema';
 

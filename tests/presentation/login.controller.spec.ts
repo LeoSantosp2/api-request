@@ -4,7 +4,7 @@ import { Response } from 'express';
 import { LoginController } from '../../src/presentation/controllers/login';
 import { LoginUseCase } from '../../src/application/login/login.useCase';
 import { LoginRequestData } from '../../src/domain/login/login';
-import { RequestProps } from '../../src/interfaces/request-props';
+import { RequestProps } from '../../src/interfaces/request.props';
 
 type MockRes = { json: jest.Mock };
 

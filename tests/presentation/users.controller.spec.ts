@@ -8,7 +8,7 @@ import { CreateUseCase } from '../../src/application/users/create.useCase';
 import { UpdateUseCase } from '../../src/application/users/update.useCase';
 import { DeleteUseCase } from '../../src/application/users/delete.useCase';
 import { UserRequestData } from '../../src/domain/users/users';
-import { RequestProps } from '../../src/interfaces/request-props';
+import { RequestProps } from '../../src/interfaces/request.props';
 
 type MockRes = {
   json: jest.Mock;

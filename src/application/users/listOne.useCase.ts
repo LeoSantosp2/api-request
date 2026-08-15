@@ -1,6 +1,6 @@
 import { UserRepository } from '../../domain/users/user';
 
-import { HttpError } from '../../utils/http-error';
+import { HttpError } from '../../utils/http.error';
 
 export class ListOneUseCase {
   constructor(protected readonly userRepository: UserRepository) {}

@@ -1,6 +1,6 @@
 import rateLimit from 'express-rate-limit';
 
-import { HttpError } from '../utils/http-error';
+import { HttpError } from '../utils/http.error';
 
 export const loginRateLimit = rateLimit({
   windowMs: 15 * 60 * 1000,
