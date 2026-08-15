@@ -118,7 +118,7 @@ TOKEN_EXPIRATION=7d
 
 The migrations configure database automatically:
 ```bash
-npx prisma migrate dev
+npm run prisma:migrate
 ```
 
 ## Tests
@@ -236,6 +236,10 @@ The API is available in `http://localhost:3333`
 | `npm test` | Run unit tests |
 | `npm run test:watch` | Run tests in watch mode |
 | `npm run test:coverage` | Run tests with coverage |
+| `npm run prisma:generate` | Generate the Prisma Client |
+| `npm run prisma:migrate` | Create and apply a migration in development |
+| `npm run prisma:migrate:deploy` | Apply pending migrations (production) |
+| `npm run prisma:studio` | Open Prisma Studio |
 
 ## Build to production
 The project use [Sucrase](https://www.npmjs.com/package/sucrase) to quick compilation.
