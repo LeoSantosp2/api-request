@@ -142,7 +142,7 @@ npm run test:watch
 npm run test:coverage
 ```
 
-> Current coverage (latest local run): **96.51% statements**, **86.44% branches**, **100% functions**, **96.44% lines**.
+> Current coverage (latest local run): **95.81% statements**, **88% branches**, **96.22% functions**, **96.75% lines**.
 
 ## Configuration
 
@@ -266,26 +266,40 @@ npm start
 │   ├── app.ts          # Express Configuration
 │   ├── server.ts       # Server initiator
 │   ├── config/         # General configurations
-│   │   ├── env.ts      # Environment variables
-│   │   └── prisma.ts   # Prisma instance
+│   │   └── env.ts      # Environment variables
 │   ├── docs/           # OpenAPI documentation (zod-to-openapi)
 │   │   ├── registry.ts             # OpenAPIRegistry + bearerAuth security scheme
 │   │   ├── common.ts               # Shared response schemas (error/success)
 │   │   ├── login.ts                # /api/login OpenAPI paths
 │   │   ├── users.ts                # /api/users OpenAPI paths
 │   │   └── generate-document.ts    # Builds the final OpenAPI document
-│   ├── modules/         # Feature modules (route, controller, service, repository, schema)
+│   ├── domain/          # Entities, Zod schemas and repository contracts (interfaces)
 │   │   ├── login/
-│   │   │   ├── login-route.ts
-│   │   │   ├── login-controller.ts
-│   │   │   ├── login-service.ts
-│   │   │   └── login-schema.ts
+│   │   │   ├── login.ts            # Login domain types
+│   │   │   └── login.schema.ts     # Zod validation schema
 │   │   └── users/
-│   │       ├── user-router.ts
-│   │       ├── user-controller.ts
-│   │       ├── user-service.ts
-│   │       ├── user-repository.ts
-│   │       └── user-schema.ts
+│   │       ├── users.ts            # User entity + UserRepository interface
+│   │       └── user.schema.ts      # Zod validation schema
+│   ├── application/     # Use cases (business logic), one class per action
+│   │   ├── login/
+│   │   │   └── login.useCase.ts
+│   │   └── users/
+│   │       ├── create.useCase.ts
+│   │       ├── listAll.useCase.ts
+│   │       ├── listOne.useCase.ts
+│   │       ├── update.useCase.ts
+│   │       └── delete.useCase.ts
+│   ├── infraestructure/ # Concrete implementations (Prisma, DB)
+│   │   └── database/
+│   │       ├── prisma.config.ts            # Shared PrismaClient instance
+│   │       └── prisma.users.repository.ts  # UserRepository implementation
+│   ├── presentation/    # HTTP layer: routes wire controllers to use cases
+│   │   ├── routes/
+│   │   │   ├── login.ts
+│   │   │   └── users.ts
+│   │   └── controllers/
+│   │       ├── login.ts
+│   │       └── users.ts
 │   ├── middleware/     # Middlewares
 │   │   ├── error-handler.ts
 │   │   ├── login-required.ts
@@ -303,13 +317,13 @@ npm start
 
 ### Architectural pattern
 
-The project follow the layered architecture pattern, grouped by feature module under `src/modules/` (route → controller → service → repository).
+The project follows a **Clean Architecture** style, split into four layers by responsibility: `domain` → `application` → `infraestructure` → `presentation`. Dependencies point inward: the presentation layer depends on application/domain, and infrastructure implements the contracts defined in the domain — never the other way around.
 
-- **Routes**: Define the API endpoints
-- **Controllers**: Receives HTTP requests and call the services
-- **Services**: Contains the main business logic
-- **Repositories**: Abstract the data manipulation with Prisma
-- **Middleware**: Intermediaries functions (authentication, error handling)
+- **Domain** (`src/domain/`): Entities, Zod validation schemas and repository interfaces (e.g. `UserRepository`). Framework-agnostic.
+- **Application** (`src/application/`): Use cases — one class per action (`CreateUseCase`, `ListAllUseCase`, ...) — holding the business logic. Depends only on domain interfaces, receiving the repository via constructor injection.
+- **Infraestructure** (`src/infraestructure/`): Concrete implementations of the domain contracts, such as `PrismaRepository`, plus the shared Prisma client instance.
+- **Presentation** (`src/presentation/`): HTTP layer — `routes/` define the endpoints and wire controllers to their use cases; `controllers/` read `req`, call the corresponding use case and send `res`.
+- **Middleware** (`src/middleware/`): Cross-cutting functions (authentication, rate limiting, error handling, body validation).
 
 ## Contribution
 
@@ -323,4 +337,4 @@ This project is licensed under the [License MIT](./LICENSE).
 
 **Developed by:** [LeoSantosp2](https://github.com/LeoSantosp2)
 
-**Last update:** July 2026
+**Last update:** August 2026
