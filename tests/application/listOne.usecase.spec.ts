@@ -1,7 +1,7 @@
 import { mock, MockProxy } from 'jest-mock-extended';
 
 import { ListOneUseCase } from '../../src/application/users/listOne.useCase';
-import { UserRepository } from '../../src/domain/users/users';
+import { UserRepository } from '../../src/domain/users/user';
 import { HttpError } from '../../src/utils/http.error';
 
 describe('Testing ListOneUseCase', () => {

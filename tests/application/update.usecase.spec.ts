@@ -1,7 +1,7 @@
 import { mock, MockProxy } from 'jest-mock-extended';
 
 import { UpdateUseCase } from '../../src/application/users/update.useCase';
-import { UserRepository, User } from '../../src/domain/users/users';
+import { UserRepository, User } from '../../src/domain/users/user';
 import { HttpError } from '../../src/utils/http.error';
 
 jest.mock('../../src/utils/hash.password', () => ({

@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 
 import env from '../src/config/env';
 
-jest.mock('../src/infraestructure/database/prisma.users.repository', () => ({
+jest.mock('../src/infrastructure/database/prisma.users.repository', () => ({
   PrismaRepository: jest.fn().mockImplementation(() => ({
     listAll: jest.fn(),
     listOne: jest.fn(),
@@ -30,7 +30,7 @@ describe('Testing App', () => {
 
   const loadApp = async () => {
     const { PrismaRepository } = await import(
-      '../src/infraestructure/database/prisma.users.repository'
+      '../src/infrastructure/database/prisma.users.repository'
     );
     const app = (await import('../src/app')).default;
 

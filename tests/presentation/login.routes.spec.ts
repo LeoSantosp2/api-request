@@ -14,7 +14,7 @@ describe('Testing Login Routes', () => {
       },
     }));
 
-    jest.doMock('../../src/infraestructure/database/prisma.config', () => ({
+    jest.doMock('../../src/infrastructure/database/prisma.config', () => ({
       prisma: {},
     }));
 

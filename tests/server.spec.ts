@@ -23,7 +23,7 @@ describe('Testing Server bootstrap', () => {
       },
     }));
 
-    jest.doMock('../src/infraestructure/database/prisma.config', () => ({
+    jest.doMock('../src/infrastructure/database/prisma.config', () => ({
       prisma: { $disconnect: jest.fn() },
     }));
 
@@ -53,7 +53,7 @@ describe('Testing Server bootstrap', () => {
       default: { API_PORT: '3333' },
     }));
 
-    jest.doMock('../src/infraestructure/database/prisma.config', () => ({
+    jest.doMock('../src/infrastructure/database/prisma.config', () => ({
       prisma: { $disconnect: jest.fn() },
     }));
 
@@ -95,7 +95,7 @@ describe('Testing Server bootstrap', () => {
       default: { API_PORT: '3333' },
     }));
 
-    jest.doMock('../src/infraestructure/database/prisma.config', () => ({
+    jest.doMock('../src/infrastructure/database/prisma.config', () => ({
       prisma: { $disconnect: jest.fn() },
     }));
 
@@ -142,7 +142,7 @@ describe('Testing Server bootstrap', () => {
       default: { API_PORT: '3333' },
     }));
 
-    jest.doMock('../src/infraestructure/database/prisma.config', () => ({
+    jest.doMock('../src/infrastructure/database/prisma.config', () => ({
       prisma: { $disconnect: disconnect },
     }));
 

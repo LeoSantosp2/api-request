@@ -7,7 +7,7 @@ import { ListOneUseCase } from '../../src/application/users/listOne.useCase';
 import { CreateUseCase } from '../../src/application/users/create.useCase';
 import { UpdateUseCase } from '../../src/application/users/update.useCase';
 import { DeleteUseCase } from '../../src/application/users/delete.useCase';
-import { UserRequestData } from '../../src/domain/users/users';
+import { UserRequestData } from '../../src/domain/users/user';
 import { RequestProps } from '../../src/interfaces/request.props';
 
 type MockRes = {

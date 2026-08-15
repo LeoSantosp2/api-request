@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import { mock, MockProxy } from 'jest-mock-extended';
 
 import { LoginUseCase } from '../../src/application/login/login.useCase';
-import { UserRepository } from '../../src/domain/users/users';
+import { UserRepository } from '../../src/domain/users/user';
 import { HttpError } from '../../src/utils/http.error';
 
 jest.mock('../../src/config/env', () => ({
