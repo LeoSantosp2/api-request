@@ -3,10 +3,10 @@ import 'dotenv/config';
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 
-import env from '../../src/config/env';
-import { loginRequired } from '../../src/middleware/login.required';
-import { HttpError } from '../../src/utils/http.error';
-import { RequestProps } from '../../src/interfaces/request.props';
+import env from '../../src/infrastructure/config/env';
+import { loginRequired } from '../../src/presentation/middleware/login.required';
+import { HttpError } from '../../src/presentation/utils/http.error';
+import { RequestProps } from '../../src/domain/interfaces/request.props';
 
 describe('Login Required Middleware', () => {
   const mockRequest = (headers?: Record<string, string>) =>

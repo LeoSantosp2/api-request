@@ -3,7 +3,7 @@ import 'dotenv/config';
 import request from 'supertest';
 import jwt from 'jsonwebtoken';
 
-import env from '../src/config/env';
+import env from '../src/infrastructure/config/env';
 
 jest.mock('../src/infrastructure/database/prisma.users.repository', () => ({
   PrismaRepository: jest.fn().mockImplementation(() => ({

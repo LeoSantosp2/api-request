@@ -18,7 +18,7 @@ describe('Testing Login Routes', () => {
       prisma: {},
     }));
 
-    return import('../../src/presentation/routes/login').then(
+    return import('../../src/presentation/routes/login.router').then(
       ({ default: loginRouter }) => {
         expect(loginRouter).toBeDefined();
         expect(

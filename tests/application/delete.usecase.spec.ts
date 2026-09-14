@@ -1,8 +1,8 @@
 import { mock, MockProxy } from 'jest-mock-extended';
 
-import { DeleteUseCase } from '../../src/application/users/delete.useCase';
+import { DeleteUseCase } from '../../src/application/use-case/users/delete.useCase';
 import { UserRepository } from '../../src/domain/users/user';
-import { HttpError } from '../../src/utils/http.error';
+import { HttpError } from '../../src/presentation/utils/http.error';
 
 describe('Testing DeleteUseCase', () => {
   let userRepository: MockProxy<UserRepository>;

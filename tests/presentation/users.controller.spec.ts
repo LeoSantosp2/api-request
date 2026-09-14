@@ -1,14 +1,14 @@
 import { mock, MockProxy } from 'jest-mock-extended';
 import { Response } from 'express';
 
-import { UsersController } from '../../src/presentation/controllers/users';
-import { ListAllUseCase } from '../../src/application/users/listAll.useCase';
-import { ListOneUseCase } from '../../src/application/users/listOne.useCase';
-import { CreateUseCase } from '../../src/application/users/create.useCase';
-import { UpdateUseCase } from '../../src/application/users/update.useCase';
-import { DeleteUseCase } from '../../src/application/users/delete.useCase';
+import { UsersController } from '../../src/presentation/controllers/user.controller';
+import { ListAllUseCase } from '../../src/application/use-case/users/listAll.useCase';
+import { ListOneUseCase } from '../../src/application/use-case/users/listOne.useCase';
+import { CreateUseCase } from '../../src/application/use-case/users/create.useCase';
+import { UpdateUseCase } from '../../src/application/use-case/users/update.useCase';
+import { DeleteUseCase } from '../../src/application/use-case/users/delete.useCase';
 import { UserRequestData } from '../../src/domain/users/user';
-import { RequestProps } from '../../src/interfaces/request.props';
+import { RequestProps } from '../../src/domain/interfaces/request.props';
 
 type MockRes = {
   json: jest.Mock;

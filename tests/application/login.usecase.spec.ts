@@ -1,9 +1,9 @@
 import jwt from 'jsonwebtoken';
 import { mock, MockProxy } from 'jest-mock-extended';
 
-import { LoginUseCase } from '../../src/application/login/login.useCase';
+import { LoginUseCase } from '../../src/application/use-case/login/login.useCase';
 import { UserRepository } from '../../src/domain/users/user';
-import { HttpError } from '../../src/utils/http.error';
+import { HttpError } from '../../src/presentation/utils/http.error';
 
 jest.mock('../../src/config/env', () => ({
   __esModule: true,

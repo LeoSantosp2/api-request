@@ -1,6 +1,6 @@
-import { UserRepository } from '../../domain/users/user';
+import { UserRepository } from '../../../domain/entities/user.entity';
 
-import { HttpError } from '../../utils/http.error';
+import { HttpError } from '../../../presentation/utils/http.error';
 
 export class DeleteUseCase {
   constructor(protected readonly userRepository: UserRepository) {}

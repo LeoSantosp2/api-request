@@ -18,7 +18,7 @@ describe('Testing Users Routes', () => {
       prisma: {},
     }));
 
-    return import('../../src/presentation/routes/users').then(
+    return import('../../src/presentation/routes/user.router').then(
       ({ default: usersRouter }) => {
         expect(usersRouter).toBeDefined();
         expect(

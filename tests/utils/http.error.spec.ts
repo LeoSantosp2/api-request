@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { HttpError } from '../../src/utils/http.error';
+import { HttpError } from '../../src/presentation/utils/http.error';
 
 describe('Testing HttpError class', () => {
   it('constructs with statusCode and message', () => {

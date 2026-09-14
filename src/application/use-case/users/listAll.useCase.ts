@@ -1,4 +1,4 @@
-import { UserRepository } from '../../domain/users/user';
+import { UserRepository } from '../../../domain/entities/user.entity';
 
 export class ListAllUseCase {
   constructor(protected readonly userRepository: UserRepository) {}

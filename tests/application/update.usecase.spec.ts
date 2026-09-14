@@ -1,8 +1,8 @@
 import { mock, MockProxy } from 'jest-mock-extended';
 
-import { UpdateUseCase } from '../../src/application/users/update.useCase';
+import { UpdateUseCase } from '../../src/application/use-case/users/update.useCase';
 import { UserRepository, User } from '../../src/domain/users/user';
-import { HttpError } from '../../src/utils/http.error';
+import { HttpError } from '../../src/presentation/utils/http.error';
 
 jest.mock('../../src/utils/hash.password', () => ({
   hashPassword: jest.fn(() => 'hashed-new-password'),

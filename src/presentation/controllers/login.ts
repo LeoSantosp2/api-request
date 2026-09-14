@@ -1,10 +1,13 @@
 import { Response } from 'express';
 
-import { LoginRequestData } from '../../domain/login/login';
+import { LoginUseCase } from '../../application/use-case/login/login.useCase';
 
-import { LoginUseCase } from '../../application/login/login.useCase';
+import { RequestProps } from '../../domain/interfaces/request.props';
 
-import { RequestProps } from '../../interfaces/request.props';
+interface LoginRequestData {
+  email: string;
+  password: string;
+}
 
 export class LoginController {
   constructor(protected readonly loginUseCase: LoginUseCase) {}

@@ -1,11 +1,11 @@
 import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
 
-import env from '../config/env';
+import env from '../../infrastructure/config/env';
 
 import { HttpError } from '../utils/http.error';
 
-import { RequestProps } from '../interfaces/request.props';
+import { RequestProps } from '../../domain/interfaces/request.props';
 
 export const loginRequired = (
   req: Request,

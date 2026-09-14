@@ -1,10 +1,10 @@
 import app from './app';
 
-import env from './config/env';
+import env from './infrastructure/config/env';
 
 import { prisma } from './infrastructure/database/prisma.config';
 
-import logger from './utils/logger';
+import logger from './presentation/utils/logger';
 
 const PORT = env.API_PORT || 3333;
 

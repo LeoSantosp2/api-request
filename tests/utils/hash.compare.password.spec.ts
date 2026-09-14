@@ -1,5 +1,5 @@
-import { hashPassword } from '../../src/utils/hash.password';
-import { comparePassword } from '../../src/utils/compare.password';
+import { hashPassword } from '../../src/presentation/utils/hash.password';
+import { comparePassword } from '../../src/presentation/utils/compare.password';
 
 describe('Testing hashPassword / comparePassword', () => {
   it('should return True when password matches the hash', () => {

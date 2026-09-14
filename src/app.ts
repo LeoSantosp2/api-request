@@ -4,14 +4,14 @@ import cors, { CorsOptions } from 'cors';
 import 'dotenv/config';
 import 'express-async-errors';
 
-import env from './config/env';
+import env from './infrastructure/config/env';
 
-import usersRouter from './presentation/routes/users';
-import loginRouter from './presentation/routes/login';
+import usersRouter from './presentation/routes/user.router';
+import loginRouter from './presentation/routes/login.router';
 
-import { generateOpenApiDocument } from './docs/generate.document';
+import { generateOpenApiDocument } from './infrastructure/docs/generate.document';
 
-import { errorHandler } from './middleware/error.handler';
+import { errorHandler } from './presentation/middleware/error.handler';
 
 const corsOptions: CorsOptions = {
   origin: env.CORS_ORIGIN.split(',').map((origin) => origin.trim()),
