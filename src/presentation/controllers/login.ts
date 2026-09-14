@@ -4,7 +4,7 @@ import { LoginUseCase } from '../../application/use-case/login/login.useCase';
 
 import { RequestProps } from '../../domain/interfaces/request.props';
 
-interface LoginRequestData {
+export interface LoginRequestData {
   email: string;
   password: string;
 }
