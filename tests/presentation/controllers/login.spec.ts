@@ -1,10 +1,10 @@
 import { mock, MockProxy } from 'jest-mock-extended';
 import { Response } from 'express';
 
-import { LoginController } from '../../src/presentation/controllers/login';
-import { LoginUseCase } from '../../src/application/use-case/login/login.useCase';
-import { LoginRequestData } from '../../src/domain/login/login';
-import { RequestProps } from '../../src/domain/interfaces/request.props';
+import { LoginController } from '../../../src/presentation/controllers/login';
+import { LoginUseCase } from '../../../src/application/use-case/login/login.useCase';
+import { LoginRequestData } from '../../../src/presentation/controllers/login';
+import { RequestProps } from '../../../src/domain/interfaces/request.props';
 
 type MockRes = { json: jest.Mock };
 
@@ -24,7 +24,7 @@ describe('Testing LoginController', () => {
     loginUseCase.execute.mockResolvedValueOnce({
       id: '1',
       email: 'a@a.com',
-      token: 't',
+      accessToken: 't',
     });
 
     const res = createMockRes();
@@ -38,7 +38,7 @@ describe('Testing LoginController', () => {
     expect(res.json).toHaveBeenCalledWith({
       id: '1',
       email: 'a@a.com',
-      token: 't',
+      accessToken: 't',
     });
   });
 });
