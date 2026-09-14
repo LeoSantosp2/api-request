@@ -1,14 +1,14 @@
 import { mock, MockProxy } from 'jest-mock-extended';
 import { Response } from 'express';
 
-import { UsersController } from '../../src/presentation/controllers/user.controller';
-import { ListAllUseCase } from '../../src/application/use-case/users/listAll.useCase';
-import { ListOneUseCase } from '../../src/application/use-case/users/listOne.useCase';
-import { CreateUseCase } from '../../src/application/use-case/users/create.useCase';
-import { UpdateUseCase } from '../../src/application/use-case/users/update.useCase';
-import { DeleteUseCase } from '../../src/application/use-case/users/delete.useCase';
-import { UserRequestData } from '../../src/domain/users/user';
-import { RequestProps } from '../../src/domain/interfaces/request.props';
+import { UsersController } from '../../../src/presentation/controllers/user.controller';
+import { ListAllUseCase } from '../../../src/application/use-case/users/listAll.useCase';
+import { ListOneUseCase } from '../../../src/application/use-case/users/listOne.useCase';
+import { CreateUseCase } from '../../../src/application/use-case/users/create.useCase';
+import { UpdateUseCase } from '../../../src/application/use-case/users/update.useCase';
+import { DeleteUseCase } from '../../../src/application/use-case/users/delete.useCase';
+import { CreateUserRequestData } from '../../../src/domain/entities/user.entity';
+import { RequestProps } from '../../../src/domain/interfaces/request.props';
 
 type MockRes = {
   json: jest.Mock;
@@ -79,7 +79,7 @@ describe('Testing UsersController', () => {
     createUseCase.execute.mockResolvedValueOnce(undefined);
 
     const res = createMockRes();
-    const req = { body: {} } as RequestProps<UserRequestData>;
+    const req = { body: {} } as RequestProps<CreateUserRequestData>;
 
     await usersController.POST(req, res as unknown as Response);
 
@@ -98,7 +98,7 @@ describe('Testing UsersController', () => {
       params: { id: '1' },
       body: {},
       userId: '1',
-    } as unknown as RequestProps<UserRequestData>;
+    } as unknown as RequestProps<CreateUserRequestData>;
 
     await usersController.PUT(req, res as unknown as Response);
 

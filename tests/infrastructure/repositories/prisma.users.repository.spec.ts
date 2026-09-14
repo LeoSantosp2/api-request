@@ -1,9 +1,12 @@
-import { prisma } from '../../src/infrastructure/database/prisma.config';
+import { prisma } from '../../../src/infrastructure/database/prisma.config';
 
-import { PrismaRepository } from '../../src/infrastructure/database/prisma.users.repository';
-import { CreateUserData, UpdateUserData } from '../../src/domain/users/user';
+import { PrismaRepository } from '../../../src/infrastructure/repositories/prisma.users.repository';
+import {
+  CreateUserData,
+  UpdateUserData,
+} from '../../../src/domain/entities/user.entity';
 
-jest.mock('../../src/infrastructure/database/prisma.config', () => ({
+jest.mock('../../../src/infrastructure/database/prisma.config', () => ({
   prisma: {
     users: {
       findMany: jest.fn(),
@@ -101,8 +104,6 @@ describe('Testing PrismaRepository', () => {
     const user: UpdateUserData = {
       first_name: 'A',
       last_name: 'B',
-      email: 'new@a.com',
-      password: 'hashed',
     };
     await repository.update('1', user);
 
