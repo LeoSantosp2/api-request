@@ -1,11 +1,11 @@
 import jwt from 'jsonwebtoken';
 import { mock, MockProxy } from 'jest-mock-extended';
 
-import { LoginUseCase } from '../../src/application/use-case/login/login.useCase';
-import { UserRepository } from '../../src/domain/users/user';
-import { HttpError } from '../../src/presentation/utils/http.error';
+import { LoginUseCase } from '../../../../src/application/use-case/login/login.useCase';
+import { UserRepository } from '../../../../src/domain/entities/user.entity';
+import { HttpError } from '../../../../src/presentation/utils/http.error';
 
-jest.mock('../../src/config/env', () => ({
+jest.mock('../../../../src/infrastructure/config/env', () => ({
   __esModule: true,
   default: {
     TOKEN_SECRET: 'test-secret',
@@ -13,7 +13,7 @@ jest.mock('../../src/config/env', () => ({
   },
 }));
 
-jest.mock('../../src/utils/compare.password', () => ({
+jest.mock('../../../../src/presentation/utils/compare.password', () => ({
   comparePassword: jest.fn(),
 }));
 
@@ -47,7 +47,7 @@ describe('Testing LoginUseCase', () => {
 
   it('Should throw 401 when password is invalid', async () => {
     const { comparePassword } = jest.requireMock(
-      '../../src/utils/compare.password',
+      '../../../../src/presentation/utils/compare.password',
     );
 
     userRepository.showByEmail.mockResolvedValueOnce({
@@ -68,7 +68,7 @@ describe('Testing LoginUseCase', () => {
 
   it('Should login user and return token', async () => {
     const { comparePassword } = jest.requireMock(
-      '../../src/utils/compare.password',
+      '../../../../src/presentation/utils/compare.password',
     );
 
     userRepository.showByEmail.mockResolvedValueOnce({
@@ -93,7 +93,7 @@ describe('Testing LoginUseCase', () => {
     expect(result).toEqual({
       id: '1',
       email: 'a@a.com',
-      token: 'signed-token',
+      accessToken: 'signed-token',
     });
   });
 });

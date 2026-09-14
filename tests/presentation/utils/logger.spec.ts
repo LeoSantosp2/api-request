@@ -1,4 +1,4 @@
-import logger from '../../src/presentation/utils/logger';
+import logger from '../../../src/presentation/utils/logger';
 
 describe('Logger', () => {
   afterEach(() => {

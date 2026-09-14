@@ -1,7 +1,7 @@
 import { mock, MockProxy } from 'jest-mock-extended';
 
-import { ListAllUseCase } from '../../src/application/use-case/users/listAll.useCase';
-import { UserRepository } from '../../src/domain/users/user';
+import { ListAllUseCase } from '../../../../src/application/use-case/users/listAll.useCase';
+import { UserRepository } from '../../../../src/domain/entities/user.entity';
 
 describe('Testing ListAllUseCase', () => {
   let userRepository: MockProxy<UserRepository>;

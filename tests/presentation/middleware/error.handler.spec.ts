@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { errorHandler } from '../../src/presentation/middleware/error.handler';
-import { HttpError } from '../../src/presentation/utils/http.error';
+import { errorHandler } from '../../../src/presentation/middleware/error.handler';
+import { HttpError } from '../../../src/presentation/utils/http.error';
 
 describe('errorHandler middleware', () => {
   const mockReq = {} as Request;
@@ -50,7 +50,7 @@ describe('errorHandler middleware', () => {
   it('logs generic errors via console.error', () => {
     const err = new Error('oh no');
     const res = createMockRes();
-    const spy = jest.spyOn(console, 'error').mockImplementation(() => { });
+    const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
     errorHandler(err, mockReq, res as unknown as Response, jest.fn());
 
@@ -78,7 +78,7 @@ describe('errorHandler middleware', () => {
     const err = new Error('plain');
     const res = createMockRes();
 
-    const spy = jest.spyOn(console, 'error').mockImplementation(() => { });
+    const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
     errorHandler(err, mockReq, res as unknown as Response, jest.fn());
 

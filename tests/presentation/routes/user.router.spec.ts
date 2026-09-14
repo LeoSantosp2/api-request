@@ -6,7 +6,7 @@ describe('Testing Users Routes', () => {
   it('exports an express router with routes registered', () => {
     jest.resetModules();
 
-    jest.doMock('../../src/config/env', () => ({
+    jest.doMock('../../../src/infrastructure/config/env', () => ({
       __esModule: true,
       default: {
         TOKEN_SECRET: 'test-secret',
@@ -14,11 +14,11 @@ describe('Testing Users Routes', () => {
       },
     }));
 
-    jest.doMock('../../src/infrastructure/database/prisma.config', () => ({
+    jest.doMock('../../../src/infrastructure/database/prisma.config', () => ({
       prisma: {},
     }));
 
-    return import('../../src/presentation/routes/user.router').then(
+    return import('../../../src/presentation/routes/user.router').then(
       ({ default: usersRouter }) => {
         expect(usersRouter).toBeDefined();
         expect(

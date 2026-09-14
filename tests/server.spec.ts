@@ -16,7 +16,7 @@ describe('Testing Server bootstrap', () => {
       default: { listen },
     }));
 
-    jest.doMock('../src/config/env', () => ({
+    jest.doMock('../src/infrastructure/config/env', () => ({
       __esModule: true,
       default: {
         API_PORT: '3333',
@@ -48,7 +48,7 @@ describe('Testing Server bootstrap', () => {
       default: { listen },
     }));
 
-    jest.doMock('../src/config/env', () => ({
+    jest.doMock('../src/infrastructure/config/env', () => ({
       __esModule: true,
       default: { API_PORT: '3333' },
     }));
@@ -90,7 +90,7 @@ describe('Testing Server bootstrap', () => {
       default: { listen },
     }));
 
-    jest.doMock('../src/config/env', () => ({
+    jest.doMock('../src/infrastructure/config/env', () => ({
       __esModule: true,
       default: { API_PORT: '3333' },
     }));
@@ -137,7 +137,7 @@ describe('Testing Server bootstrap', () => {
       default: { listen },
     }));
 
-    jest.doMock('../src/config/env', () => ({
+    jest.doMock('../src/infrastructure/config/env', () => ({
       __esModule: true,
       default: { API_PORT: '3333' },
     }));

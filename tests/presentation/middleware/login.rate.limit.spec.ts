@@ -2,8 +2,8 @@ import express from 'express';
 import request from 'supertest';
 import rateLimit from 'express-rate-limit';
 
-import { HttpError } from '../../src/presentation/utils/http.error';
-import { loginRateLimit } from '../../src/presentation/middleware/login.rate.limit';
+import { HttpError } from '../../../src/presentation/utils/http.error';
+import { loginRateLimit } from '../../../src/presentation/middleware/login.rate.limit';
 
 describe('Login Rate Limit Middleware', () => {
   it('Should throw a 429 HttpError from the real handler when the limit is exceeded', async () => {
