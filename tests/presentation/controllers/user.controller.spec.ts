@@ -7,7 +7,7 @@ import { ListOneUseCase } from '../../../src/application/use-case/users/listOne.
 import { CreateUseCase } from '../../../src/application/use-case/users/create.useCase';
 import { UpdateUseCase } from '../../../src/application/use-case/users/update.useCase';
 import { DeleteUseCase } from '../../../src/application/use-case/users/delete.useCase';
-import { CreateUserRequestData } from '../../../src/domain/entities/user.entity';
+import { CreateUserRequestData } from '../../../src/domain/entities/users.entity';
 import { RequestProps } from '../../../src/domain/interfaces/request.props';
 
 type MockRes = {

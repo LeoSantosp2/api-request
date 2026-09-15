@@ -3,7 +3,7 @@ import { v4 } from 'uuid';
 import {
   UserRepository,
   CreateUserRequestData,
-} from '../../../domain/entities/user.entity';
+} from '../../../domain/entities/users.entity';
 
 import { HttpError } from '../../../presentation/utils/http.error';
 import { hashPassword } from '../../../presentation/utils/hash.password';

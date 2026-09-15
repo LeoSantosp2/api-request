@@ -4,7 +4,7 @@ import {
   CreateUserData,
   UpdateUserData,
   UserRepository,
-} from '../../domain/entities/user.entity';
+} from '../../domain/entities/users.entity';
 
 const publicSelect = {
   id: true,
@@ -15,7 +15,7 @@ const publicSelect = {
   updated_at: true,
 };
 
-export class PrismaRepository implements UserRepository {
+export class PrismaUsersRepository implements UserRepository {
   async listAll() {
     return await prisma.users.findMany({ select: publicSelect });
   }

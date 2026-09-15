@@ -1,4 +1,4 @@
-import { UserRepository } from '../../../domain/entities/user.entity';
+import { UserRepository } from '../../../domain/entities/users.entity';
 
 import { HttpError } from '../../../presentation/utils/http.error';
 
