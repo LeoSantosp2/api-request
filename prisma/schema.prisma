@@ -14,4 +14,18 @@ model Users {
   password   String
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+
+  refreshToken RefreshToken[]
+}
+
+model RefreshToken {
+  id         String   @id
+  user_id    String
+  users      Users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  token_hash String   @unique
+  expires_at DateTime @unique
+  revoked_at DateTime?
+  created_at DateTime @default(now())
+
+  @@map("refresh_token")
 }
