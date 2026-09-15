@@ -1,6 +1,6 @@
 import { Response } from 'express';
 
-import { LoginUseCase } from '../../application/use-case/login/login.useCase';
+import { LoginUseCase } from '../../application/use-case/auth/login.useCase';
 
 import { RequestProps } from '../../domain/interfaces/request.props';
 
