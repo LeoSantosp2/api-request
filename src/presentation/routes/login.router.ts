@@ -1,8 +1,9 @@
 import { Router } from 'express';
 
-import { PrismaRepository } from '../../infrastructure/repositories/prisma.users.repository';
+import { PrismaUsersRepository } from '../../infrastructure/repositories/prisma.users.repository';
+import { PrismaRefreshTokenRepository } from '../../infrastructure/repositories/prisma.refresh.token.repository';
 
-import { LoginUseCase } from '../../application/use-case/login/login.useCase';
+import { LoginUseCase } from '../../application/use-case/auth/login.useCase';
 
 import { LoginController } from '../controllers/login';
 
@@ -13,9 +14,10 @@ import { loginRequestSchema } from '../../domain/schemas/login.schema';
 
 const router = Router();
 
-const userRepository = new PrismaRepository();
+const userRepository = new PrismaUsersRepository();
+const refreshTokenRepository = new PrismaRefreshTokenRepository();
 
-const loginUseCase = new LoginUseCase(userRepository);
+const loginUseCase = new LoginUseCase(userRepository, refreshTokenRepository);
 
 const loginController = new LoginController(loginUseCase);
 
