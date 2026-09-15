@@ -2,7 +2,7 @@ import { mock, MockProxy } from 'jest-mock-extended';
 import { Response } from 'express';
 
 import { LoginController } from '../../../src/presentation/controllers/login';
-import { LoginUseCase } from '../../../src/application/use-case/login/login.useCase';
+import { LoginUseCase } from '../../../src/application/use-case/auth/login.useCase';
 import { LoginRequestData } from '../../../src/presentation/controllers/login';
 import { RequestProps } from '../../../src/domain/interfaces/request.props';
 

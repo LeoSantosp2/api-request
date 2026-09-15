@@ -1,12 +1,12 @@
-import { prisma } from '../../../src/infrastructure/database/prisma.config';
+import { prisma } from '../../src/infrastructure/database/prisma.config';
 
-import { PrismaRepository } from '../../../src/infrastructure/repositories/prisma.users.repository';
+import { PrismaRepository } from '../../src/infrastructure/repositories/prisma.users.repository';
 import {
   CreateUserData,
   UpdateUserData,
-} from '../../../src/domain/entities/users.entity';
+} from '../../src/domain/entities/users.entity';
 
-jest.mock('../../../src/infrastructure/database/prisma.config', () => ({
+jest.mock('../../src/infrastructure/database/prisma.config', () => ({
   prisma: {
     users: {
       findMany: jest.fn(),

@@ -1,8 +1,8 @@
 import jwt from 'jsonwebtoken';
 import { mock, MockProxy } from 'jest-mock-extended';
 
-import { LoginUseCase } from '../../../../src/application/use-case/login/login.useCase';
-import { UserRepository } from '../../../../src/domain/entities/user.entity';
+import { LoginUseCase } from '../../../../src/application/use-case/auth/login.useCase';
+import { UserRepository } from '../../../../src/domain/entities/users.entity';
 import { HttpError } from '../../../../src/presentation/utils/http.error';
 
 jest.mock('../../../../src/infrastructure/config/env', () => ({
