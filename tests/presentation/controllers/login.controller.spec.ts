@@ -24,7 +24,8 @@ describe('Testing LoginController', () => {
     loginUseCase.execute.mockResolvedValueOnce({
       id: '1',
       email: 'a@a.com',
-      accessToken: 't',
+      accessToken: 'access-token',
+      refreshToken: 'refresh-token',
     });
 
     const res = createMockRes();
@@ -38,7 +39,23 @@ describe('Testing LoginController', () => {
     expect(res.json).toHaveBeenCalledWith({
       id: '1',
       email: 'a@a.com',
-      accessToken: 't',
+      accessToken: 'access-token',
+      refreshToken: 'refresh-token',
     });
+  });
+
+  it('POST propagates the use case error', async () => {
+    const error = new Error('E-mail ou senha inválidos.');
+    loginUseCase.execute.mockRejectedValueOnce(error);
+
+    const res = createMockRes();
+    const req = {
+      body: { email: 'a@a.com', password: 'wrong' },
+    } as RequestProps<LoginRequestData>;
+
+    await expect(
+      loginController.POST(req, res as unknown as Response),
+    ).rejects.toThrow(error);
+    expect(res.json).not.toHaveBeenCalled();
   });
 });
