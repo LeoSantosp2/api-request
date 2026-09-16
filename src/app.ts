@@ -7,7 +7,7 @@ import 'express-async-errors';
 import env from './infrastructure/config/env';
 
 import usersRouter from './presentation/routes/user.router';
-import loginRouter from './presentation/routes/login.router';
+import authRouter from './presentation/routes/auth.router';
 
 import { generateOpenApiDocument } from './infrastructure/docs/generate.document';
 
@@ -36,7 +36,7 @@ class App {
   routes() {
     this.app.use('/api/health', (req, res) => res.send({ status: 'ok' }));
     this.app.use('/api', usersRouter);
-    this.app.use('/api', loginRouter);
+    this.app.use('/api', authRouter);
     this.app.use(
       '/api/docs',
       swaggerUi.serve,
