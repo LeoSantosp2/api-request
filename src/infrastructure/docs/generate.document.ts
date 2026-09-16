@@ -6,6 +6,7 @@ import { registry } from './registry';
 
 import './auth';
 import './common';
+import './docs';
 import './health';
 import './users';
 

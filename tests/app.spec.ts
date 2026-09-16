@@ -90,6 +90,68 @@ describe('Testing App', () => {
     expect(res.body).toEqual({ status: 'ok' });
   });
 
+  it('GET /api/docs.json returns the OpenAPI document', async () => {
+    const { app } = await loadApp();
+
+    const res = await request(app).get('/api/docs.json');
+
+    expect(res.status).toBe(200);
+    expect(res.headers['content-type']).toMatch(/application\/json/);
+    expect(res.body.openapi).toBe('3.0.0');
+    expect(res.body.info).toEqual(
+      expect.objectContaining({ title: 'API Request' }),
+    );
+  });
+
+  it('GET /api/docs.json exposes the documented paths', async () => {
+    const { app } = await loadApp();
+
+    const res = await request(app).get('/api/docs.json');
+
+    expect(Object.keys(res.body.paths)).toEqual(
+      expect.arrayContaining([
+        '/api/auth/login',
+        '/api/auth/refresh-token',
+        '/api/auth/logout',
+        '/api/docs.json',
+        '/api/health',
+        '/api/users',
+        '/api/users/{id}',
+      ]),
+    );
+  });
+
+  it('GET /api/docs.json does not shadow the swagger ui on /api/docs', async () => {
+    const { app } = await loadApp();
+
+    const res = await request(app).get('/api/docs/');
+
+    expect(res.status).toBe(200);
+    expect(res.headers['content-type']).toMatch(/text\/html/);
+  });
+
+  it('GET /api/docs.json returns 404 in production', async () => {
+    const originalNodeEnv = process.env.NODE_ENV;
+
+    try {
+      // env.ts parses process.env at import time, and loadApp() re-imports it
+      // after jest.resetModules(), so the new value is picked up.
+      process.env.NODE_ENV = 'production';
+
+      const { app } = await loadApp();
+
+      const res = await request(app).get('/api/docs.json');
+
+      expect(res.status).toBe(404);
+      expect(res.body).toEqual({
+        status: 'error',
+        message: 'Documentação indisponível.',
+      });
+    } finally {
+      process.env.NODE_ENV = originalNodeEnv;
+    }
+  });
+
   it('GET /api/users returns json from the repository', async () => {
     const { app, usersRepository } = await loadApp();
     usersRepository.listAll.mockResolvedValueOnce([{ id: '1' }]);
