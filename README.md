@@ -29,6 +29,7 @@ Api-request is an example of API REST created with NodeJS and TypeScript. This p
 - MySQL / MariaDB
 - JWT to authentication
 - Zod for validation and OpenAPI generation
+- Helmet for security headers
 
 ## Features
 - ✅ Complete CRUD of users
@@ -36,11 +37,12 @@ Api-request is an example of API REST created with NodeJS and TypeScript. This p
 - ✅ Authentication with JWT (JSON Web Tokens)
 - ✅ Refresh tokens with rotation, revocation and logout
 - ✅ Rate limiting on the login endpoint
+- ✅ Security headers with Helmet
 - ✅ Datas validation with Zod
 - ✅ Error handling
 - ✅ Swagger/OpenAPI Documentation
 - ✅ Automatic database migrations
-- ✅ CORS configuration
+- ✅ CORS configuration and request body size limit
 - ✅ Health check endpoint
 
 ## Requirements
@@ -51,6 +53,7 @@ Api-request is an example of API REST created with NodeJS and TypeScript. This p
 ## Routes
 - URL base: `http://localhost:3333`
 - Endpoint docs: `http://localhost:3333/api/docs`
+- OpenAPI document (JSON): `http://localhost:3333/api/docs.json`
 
 ## Installation
 
@@ -157,6 +160,20 @@ npm run test:coverage
 
 ## Configuration
 
+### Security headers
+Responses go through [`helmet`](https://www.npmjs.com/package/helmet), which sets the usual hardening headers — `Content-Security-Policy`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`, `X-Frame-Options: SAMEORIGIN`, `Cross-Origin-Opener-Policy`, `Cross-Origin-Resource-Policy`, among others.
+
+HSTS is disabled in helmet (`hsts: false`) and sent by a small middleware only when the request actually arrives over HTTPS (`req.secure`), so local HTTP development is not forced onto `https://`:
+
+```
+Strict-Transport-Security: max-age=31536000; includeSubDomains
+```
+
+> Behind a reverse proxy (Nginx, Heroku, Render, ...), `req.secure` is only true if Express is told to trust the proxy. Without `app.set('trust proxy', 1)` the HSTS header will not be sent in production.
+
+### Request body limit
+JSON bodies are limited to **1mb** (`express.json({ limit: '1mb' })`). Oversized payloads are rejected before reaching a route with `413 Payload Too Large`, and malformed JSON with `400 Bad Request` — both normalized by `error.handler.ts`, which answers with the standard error body and never leaks the body-parser internal message.
+
 ### CORS
 The API only accepts cross-origin requests from allowed origins, configured through the `CORS_ORIGIN` environment variable (see [Configuration](#configuration) table above):
 
@@ -243,6 +260,7 @@ curl -X POST http://localhost:3333/api/auth/logout \
 | 401 | Unauthorized (Missing or invalid token) |
 | 403 | Forbidden |
 | 404 | Not found |
+| 413 | Payload too large (JSON body over 1mb) |
 | 429 | Too many requests (login rate limit exceeded) |
 | 500 | Internal server error |
 
