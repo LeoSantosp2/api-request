@@ -1,10 +1,12 @@
 import { v4 } from 'uuid';
 
 import { RefreshTokenRepository } from '../../../domain/entities/refresh.token.entity';
+import { UserRepository } from '../../../domain/entities/users.entity';
 
 import { HttpError } from '../../../presentation/utils/http.error';
 import {
   generateRefreshToken,
+  generateAccessToken,
   hashToken,
   expiresRefreshToken,
 } from '../../../presentation/utils/tokens';
@@ -12,6 +14,7 @@ import {
 export class RefreshTokenUseCase {
   constructor(
     protected readonly refreshTokenRepository: RefreshTokenRepository,
+    protected readonly userRepository: UserRepository,
   ) {}
 
   async execute(refreshToken: string) {
@@ -27,6 +30,12 @@ export class RefreshTokenUseCase {
       throw new HttpError(401, 'Refresh token expirado.');
     }
 
+    const user = await this.userRepository.listOne(storedToken.user_id);
+
+    if (!user) {
+      throw new HttpError(404, 'Usuário inválido.');
+    }
+
     await this.refreshTokenRepository.revoke(hashToken(refreshToken));
 
     const newRefreshToken = generateRefreshToken();
@@ -39,7 +48,7 @@ export class RefreshTokenUseCase {
     });
 
     return {
-      accessToken: '',
+      accessToken: generateAccessToken(storedToken.user_id, user.email),
       refreshToken: newRefreshToken,
     };
   }
