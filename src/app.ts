@@ -1,6 +1,7 @@
 import express from 'express';
 import swaggerUi from 'swagger-ui-express';
 import cors, { CorsOptions } from 'cors';
+import helmet from 'helmet';
 import 'dotenv/config';
 import 'express-async-errors';
 
@@ -12,6 +13,7 @@ import authRouter from './presentation/routes/auth.router';
 import { generateOpenApiDocument } from './infrastructure/docs/generate.document';
 
 import { errorHandler } from './presentation/middleware/error.handler';
+import { HttpError } from './presentation/utils/http.error';
 
 const corsOptions: CorsOptions = {
   origin: env.CORS_ORIGIN.split(',').map((origin) => origin.trim()),
@@ -28,8 +30,23 @@ class App {
   }
 
   middlewares() {
+    if (env.NODE_ENV === 'production') {
+      this.app.set('trust proxy', 1);
+    }
+
     this.app.use(express.urlencoded({ extended: true }));
-    this.app.use(express.json());
+    this.app.use(express.json({ limit: '1mb' }));
+    this.app.use(helmet({ hsts: false }));
+    this.app.use((req, res, next) => {
+      if (req.secure) {
+        res.setHeader(
+          'Strict-Transport-Security',
+          'max-age=31536000; includeSubDomains',
+        );
+      }
+
+      next();
+    });
     this.app.use(cors(corsOptions));
   }
 
@@ -37,10 +54,21 @@ class App {
     this.app.use('/api/health', (req, res) => res.send({ status: 'ok' }));
     this.app.use('/api', usersRouter);
     this.app.use('/api', authRouter);
+
+    const openApiDocument = generateOpenApiDocument();
+
+    this.app.get('/api/docs.json', (req, res) => {
+      if (!openApiDocument) {
+        throw new HttpError(404, 'Documentação indisponível.');
+      }
+
+      return res.json(openApiDocument);
+    });
+
     this.app.use(
       '/api/docs',
       swaggerUi.serve,
-      swaggerUi.setup(generateOpenApiDocument()),
+      swaggerUi.setup(openApiDocument),
     );
   }
 }
