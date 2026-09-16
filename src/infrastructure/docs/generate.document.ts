@@ -4,9 +4,9 @@ import env from '../config/env';
 
 import { registry } from './registry';
 
+import './auth';
 import './common';
 import './health';
-import './login';
 import './users';
 
 export const generateOpenApiDocument = () => {
