@@ -13,7 +13,8 @@ export type CreateRefreshToken = Omit<
 >;
 
 export interface RefreshTokenRepository {
-  listByHash: (hashToken: string) => Promise<RefreshToken | null>;
+  listByHash: (hash: string) => Promise<RefreshToken | null>;
   create: (refreshToken: CreateRefreshToken) => Promise<void>;
-  revoke: (hashToken: string) => Promise<void>;
+  revoke: (hash: string) => Promise<void>;
+  revokeAll: (userId: string) => Promise<void>;
 }
