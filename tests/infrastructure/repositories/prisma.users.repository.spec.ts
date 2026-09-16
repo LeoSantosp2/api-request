@@ -1,6 +1,6 @@
 import { prisma } from '../../../src/infrastructure/database/prisma.config';
 
-import { PrismaRepository } from '../../../src/infrastructure/repositories/prisma.users.repository';
+import { PrismaUsersRepository } from '../../../src/infrastructure/repositories/prisma.users.repository';
 import {
   CreateUserData,
   UpdateUserData,
@@ -18,8 +18,8 @@ jest.mock('../../../src/infrastructure/database/prisma.config', () => ({
   },
 }));
 
-describe('Testing PrismaRepository', () => {
-  const repository = new PrismaRepository();
+describe('Testing PrismaUsersRepository', () => {
+  const repository = new PrismaUsersRepository();
 
   const publicSelect = {
     id: true,
