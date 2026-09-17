@@ -4,7 +4,7 @@ import { HttpError } from '../utils/http.error';
 
 export const loginRateLimit = rateLimit({
   windowMs: 15 * 60 * 1000,
-  limit: 10,
+  limit: 5,
   standardHeaders: true,
   legacyHeaders: false,
   handler: () => {

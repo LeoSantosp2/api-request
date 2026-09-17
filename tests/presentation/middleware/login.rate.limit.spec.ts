@@ -26,7 +26,7 @@ describe('Login Rate Limit Middleware', () => {
       },
     );
 
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 5; i++) {
       await request(app).get('/login');
     }
 
