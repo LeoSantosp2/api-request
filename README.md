@@ -36,7 +36,7 @@ Api-request is an example of API REST created with NodeJS and TypeScript. This p
 - ✅ Login system with email and password
 - ✅ Authentication with JWT (JSON Web Tokens)
 - ✅ Refresh tokens with rotation, revocation and logout
-- ✅ Rate limiting on the login endpoint
+- ✅ Rate limiting on the login and user registration endpoints
 - ✅ Security headers with Helmet
 - ✅ Datas validation with Zod
 - ✅ Error handling
@@ -184,7 +184,12 @@ CORS_ORIGIN=http://localhost:3000,http://localhost:3001
 To allow a different frontend origin, add it to the comma-separated list in `.env`.
 
 ### Rate limiting
-The `/api/auth/login` endpoint is protected by `express-rate-limit`: **10 attempts per 15 minutes** per IP. Exceeding the limit returns `429 Too Many Requests`.
+Two endpoints are protected by `express-rate-limit`, each limited per IP. Exceeding a limit returns `429 Too Many Requests`.
+
+| Endpoint | Limit | Window |
+|----------|-------|--------|
+| `POST /api/auth/login` | 5 attempts | 15 minutes |
+| `POST /api/users` | 5 attempts | 15 minutes |
 
 ### Database
 The project use prisma ORM. The schema of the database is in `prisma/schema.prisma`.
@@ -261,7 +266,7 @@ curl -X POST http://localhost:3333/api/auth/logout \
 | 403 | Forbidden |
 | 404 | Not found |
 | 413 | Payload too large (JSON body over 1mb) |
-| 429 | Too many requests (login rate limit exceeded) |
+| 429 | Too many requests (login or registration rate limit exceeded) |
 | 500 | Internal server error |
 
 ## Execute the Project
@@ -370,6 +375,7 @@ npm start
 │       │   ├── error.handler.ts
 │       │   ├── login.required.ts
 │       │   ├── login.rate.limit.ts
+│       │   ├── register.rate.limit.ts
 │       │   └── validate.body.ts
 │       └── utils/
 │           ├── tokens.ts                # Access token signing, refresh token generation/hashing
