@@ -1,5 +1,7 @@
 import { Router } from 'express';
 
+import env from '../../infrastructure/config/env';
+
 import { PrismaUsersRepository } from '../../infrastructure/repositories/prisma.users.repository';
 
 import { ListAllUseCase } from '../../application/use-case/users/listAll.useCase';
@@ -17,6 +19,7 @@ import { UsersController } from '../controllers/user.controller';
 
 import { loginRequired } from '../middleware/login.required';
 import { validateBody } from '../middleware/validate.body';
+import { registerRateLimit } from '../middleware/register.rate.limit';
 
 const userRepository = new PrismaUsersRepository();
 
@@ -36,9 +39,17 @@ const usersController = new UsersController(
 
 const router = Router();
 
-router.get('/users', loginRequired, usersController.GET);
+if (env.NODE_ENV === 'development' || env.NODE_ENV === 'test') {
+  router.get('/users', loginRequired, usersController.GET);
+}
+
 router.get('/users/:id', loginRequired, usersController.SHOW);
-router.post('/users', validateBody(userRequestSchema), usersController.POST);
+router.post(
+  '/users',
+  registerRateLimit,
+  validateBody(userRequestSchema),
+  usersController.POST,
+);
 router.put(
   '/users/:id',
   loginRequired,
