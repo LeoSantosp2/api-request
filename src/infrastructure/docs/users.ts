@@ -90,7 +90,7 @@ registry.registerPath({
   tags: ['Users'],
   summary: 'Cria um novo usuário',
   description:
-    'Cria e registra um novo usuário no sistema. Rota pública, não requer autenticação.',
+    'Cria e registra um novo usuário no sistema. Rota pública, não requer autenticação. A rota é limitada a 5 tentativas a cada 15 minutos.',
   request: {
     body: {
       content: { 'application/json': { schema: userRequestSchema } },
@@ -103,6 +103,10 @@ registry.registerPath({
     },
     400: {
       description: 'Dados inválidos ou email já cadastrado.',
+      content: { 'application/json': { schema: errorResponseSchema } },
+    },
+    429: {
+      description: 'Muitas tentativas de cadastro. Tente novamente mais tarde.',
       content: { 'application/json': { schema: errorResponseSchema } },
     },
     500: internalErrorResponse,

@@ -44,7 +44,7 @@ registry.registerPath({
   tags: ['Auth'],
   summary: 'Realiza login do usuário',
   description:
-    'Autentica um usuário com email e senha, retornando um access token JWT e um refresh token. A expiração do access token é definida pela variável de ambiente TOKEN_EXPIRATION e a do refresh token, em dias, por REFRESH_TOKEN_EXPIRATION. A rota é limitada a 10 tentativas a cada 15 minutos.',
+    'Autentica um usuário com email e senha, retornando um access token JWT e um refresh token. A expiração do access token é definida pela variável de ambiente TOKEN_EXPIRATION e a do refresh token, em dias, por REFRESH_TOKEN_EXPIRATION. A rota é limitada a 5 tentativas a cada 15 minutos.',
   request: {
     body: {
       content: { 'application/json': { schema: loginRequestSchema } },
