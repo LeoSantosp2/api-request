@@ -183,6 +183,9 @@ CORS_ORIGIN=http://localhost:3000,http://localhost:3001
 
 To allow a different frontend origin, add it to the comma-separated list in `.env`.
 
+### Environment-restricted routes
+`GET /api/users`, which lists every registered user, is only registered when `NODE_ENV` is `development` or `test`. In production the route is not mounted and responds `404 Not Found`. The per-user `GET /api/users/:id` is available in every environment.
+
 ### Rate limiting
 Two endpoints are protected by `express-rate-limit`, each limited per IP. Exceeding a limit returns `429 Too Many Requests`.
 
@@ -238,7 +241,7 @@ curl -X POST http://localhost:3333/api/auth/login \
 # }
 
 # 2. Use the access token to reach protected endpoints
-curl http://localhost:3333/api/users \
+curl http://localhost:3333/api/users/eddcdbb6-0294-4f0e-959c-fea84cd687c4 \
   -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 
 # 3. Renew the pair once the access token expires
