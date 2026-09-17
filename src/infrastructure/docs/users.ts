@@ -44,7 +44,7 @@ registry.registerPath({
   tags: ['Users'],
   summary: 'Retorna todos os usuários',
   description:
-    'Busca e retorna a lista completa de usuários cadastrados. Requer autenticação.',
+    'Busca e retorna a lista completa de usuários cadastrados. Requer autenticação. Rota disponível apenas em desenvolvimento e teste, não é registrada em produção.',
   security: [{ [bearerAuth.name]: [] }],
   responses: {
     200: {
