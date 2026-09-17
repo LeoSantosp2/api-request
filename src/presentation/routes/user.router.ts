@@ -39,7 +39,7 @@ const usersController = new UsersController(
 
 const router = Router();
 
-if (env.NODE_ENV === 'development' || env.NODE_ENV === 'test') {
+if (env.NODE_ENV !== 'production') {
   router.get('/users', loginRequired, usersController.GET);
 }
 
