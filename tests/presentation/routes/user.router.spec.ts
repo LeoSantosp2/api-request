@@ -11,6 +11,7 @@ describe('Testing Users Routes', () => {
       default: {
         TOKEN_SECRET: 'test-secret',
         API_PORT: '3000',
+        NODE_ENV: 'test',
       },
     }));
 
