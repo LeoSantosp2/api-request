@@ -9,7 +9,7 @@ import { DeleteUseCase } from '../../application/use-case/users/delete.useCase';
 import {
   CreateUserRequestData,
   UpdateRequestUserData,
-} from '../../domain/entities/user.entity';
+} from '../../domain/entities/users.entity';
 
 import { RequestProps } from '../../domain/interfaces/request.props';
 

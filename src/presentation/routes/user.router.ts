@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import { PrismaRepository } from '../../infrastructure/repositories/prisma.users.repository';
+import { PrismaUsersRepository } from '../../infrastructure/repositories/prisma.users.repository';
 
 import { ListAllUseCase } from '../../application/use-case/users/listAll.useCase';
 import { CreateUseCase } from '../../application/use-case/users/create.useCase';
@@ -18,7 +18,7 @@ import { UsersController } from '../controllers/user.controller';
 import { loginRequired } from '../middleware/login.required';
 import { validateBody } from '../middleware/validate.body';
 
-const userRepository = new PrismaRepository();
+const userRepository = new PrismaUsersRepository();
 
 const listAllUseCase = new ListAllUseCase(userRepository);
 const createUseCase = new CreateUseCase(userRepository);

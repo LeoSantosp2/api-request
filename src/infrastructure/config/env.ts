@@ -8,6 +8,7 @@ const envSchema = z.object({
   DATABASE_PASSWORD: z.string(),
   TOKEN_SECRET: z.string(),
   TOKEN_EXPIRATION: z.string(),
+  REFRESH_TOKEN_EXPIRATION: z.string(),
   API_PORT: z.string(),
   NODE_ENV: z.enum(['development', 'production', 'test']),
   DATABASE_URL: z.string(),

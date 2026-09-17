@@ -74,6 +74,61 @@ describe('errorHandler middleware', () => {
     },
   );
 
+  it('returns 413 for a body-parser payload too large error', () => {
+    const err = Object.assign(new Error('request entity too large'), {
+      type: 'entity.too.large',
+    });
+    const res = createMockRes();
+    const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    errorHandler(err, mockReq, res as unknown as Response, jest.fn());
+
+    expect(res.status).toHaveBeenCalledWith(413);
+    expect(res.status().json).toHaveBeenCalledWith({
+      status: 'error',
+      message: 'Corpo da requisição excede o tamanho máximo permitido.',
+    });
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('returns 400 for a body-parser malformed JSON error', () => {
+    const err = Object.assign(new SyntaxError('Unexpected token'), {
+      type: 'entity.parse.failed',
+    });
+    const res = createMockRes();
+
+    errorHandler(err, mockReq, res as unknown as Response, jest.fn());
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.status().json).toHaveBeenCalledWith({
+      status: 'error',
+      message: 'JSON inválido.',
+    });
+  });
+
+  it('does not leak the internal message of a body-parser error', () => {
+    const err = Object.assign(new Error('request entity too large'), {
+      type: 'entity.too.large',
+    });
+    const res = createMockRes();
+
+    errorHandler(err, mockReq, res as unknown as Response, jest.fn());
+
+    expect(res.status().json).not.toHaveBeenCalledWith(
+      expect.objectContaining({ message: 'request entity too large' }),
+    );
+  });
+
+  it('falls back to 500 for an unknown body-parser type', () => {
+    const err = Object.assign(new Error('nope'), { type: 'entity.unknown' });
+    const res = createMockRes();
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    errorHandler(err, mockReq, res as unknown as Response, jest.fn());
+
+    expect(res.status).toHaveBeenCalledWith(500);
+  });
+
   it('handles a plain JavaScript Error', () => {
     const err = new Error('plain');
     const res = createMockRes();
