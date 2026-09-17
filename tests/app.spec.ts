@@ -76,6 +76,10 @@ describe('Testing App', () => {
     };
   };
 
+  // jest.resetModules() makes every test re-import app.ts from scratch, so the
+  // cold-start cost lands inside the test and can exceed the 5s default.
+  jest.setTimeout(30000);
+
   beforeEach(() => {
     jest.resetModules();
     jest.clearAllMocks();
