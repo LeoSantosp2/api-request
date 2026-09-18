@@ -19,7 +19,7 @@ import { UsersController } from '../controllers/user.controller';
 
 import { loginRequired } from '../middleware/login.required';
 import { validateBody } from '../middleware/validate.body';
-import { registerRateLimit } from '../middleware/register.rate.limit';
+import { requestRateLimit } from '../middleware/request.rate.limit';
 
 const userRepository = new PrismaUsersRepository();
 
@@ -40,13 +40,13 @@ const usersController = new UsersController(
 const router = Router();
 
 if (env.NODE_ENV !== 'production') {
-  router.get('/users', loginRequired, usersController.GET);
+  router.get('/users', usersController.GET);
 }
 
 router.get('/users/:id', loginRequired, usersController.SHOW);
 router.post(
   '/users',
-  registerRateLimit,
+  requestRateLimit,
   validateBody(userRequestSchema),
   usersController.POST,
 );

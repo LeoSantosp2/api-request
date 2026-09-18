@@ -11,7 +11,7 @@ import { LoginController } from '../controllers/login';
 import { RefreshTokenController } from '../controllers/refresh.token.controller';
 
 import { validateBody } from '../middleware/validate.body';
-import { loginRateLimit } from '../middleware/login.rate.limit';
+import { requestRateLimit } from '../middleware/request.rate.limit';
 
 import { loginRequestSchema } from '../../domain/schemas/login.schema';
 import { refreshTokenSchema } from '../../domain/schemas/refresh.token.schema';
@@ -39,13 +39,14 @@ const refreshTokenController = new RefreshTokenController(
 
 router.post(
   '/auth/login',
-  loginRateLimit,
+  requestRateLimit,
   validateBody(loginRequestSchema),
   loginController.POST,
 );
 
 router.post(
   '/auth/refresh-token',
+  requestRateLimit,
   validateBody(refreshTokenSchema),
   refreshTokenController.REFRESH,
 );
