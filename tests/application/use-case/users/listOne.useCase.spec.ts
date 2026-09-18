@@ -1,8 +1,20 @@
 import { mock, MockProxy } from 'jest-mock-extended';
 
 import { ListOneUseCase } from '../../../../src/application/use-case/users/listOne.useCase';
-import { UserRepository } from '../../../../src/domain/entities/users.entity';
+import {
+  UserPublic,
+  UserRepository,
+} from '../../../../src/domain/entities/users.entity';
 import { HttpError } from '../../../../src/presentation/utils/http.error';
+
+const publicUser: UserPublic = {
+  id: '1',
+  first_name: 'Leonardo',
+  last_name: 'Santos',
+  email: 'leonardo@email.com',
+  created_at: new Date(),
+  updated_at: new Date(),
+};
 
 describe('Testing ListOneUseCase', () => {
   let userRepository: MockProxy<UserRepository>;
@@ -22,15 +34,33 @@ describe('Testing ListOneUseCase', () => {
     expect(userRepository.listPublic).not.toHaveBeenCalled();
   });
 
+  it('Should throw 403 when there is no authenticated user', async () => {
+    const promise = listOneUseCase.execute('1');
+
+    await expect(promise).rejects.toMatchObject({ statusCode: 403 });
+    expect(userRepository.listPublic).not.toHaveBeenCalled();
+  });
+
+  it('Should throw 403 before revealing that the user does not exist', async () => {
+    userRepository.listPublic.mockResolvedValueOnce(null);
+
+    const promise = listOneUseCase.execute('missing-id', 'someone-else');
+
+    await expect(promise).rejects.toMatchObject({ statusCode: 403 });
+    expect(userRepository.listPublic).not.toHaveBeenCalled();
+  });
+
+  it('Should throw 404 when the user does not exist', async () => {
+    userRepository.listPublic.mockResolvedValueOnce(null);
+
+    const promise = listOneUseCase.execute('1', '1');
+
+    await expect(promise).rejects.toBeInstanceOf(HttpError);
+    await expect(promise).rejects.toMatchObject({ statusCode: 404 });
+  });
+
   it('Should return the public user', async () => {
-    userRepository.listPublic.mockResolvedValueOnce({
-      id: '1',
-      first_name: 'Leonardo',
-      last_name: 'Santos',
-      email: 'leonardo@email.com',
-      created_at: new Date(),
-      updated_at: new Date(),
-    });
+    userRepository.listPublic.mockResolvedValueOnce(publicUser);
 
     const user = await listOneUseCase.execute('1', '1');
 

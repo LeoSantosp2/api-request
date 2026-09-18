@@ -61,7 +61,16 @@ describe('Testing UsersController', () => {
   });
 
   it('SHOW returns user as json', async () => {
-    listOneUseCase.execute.mockResolvedValueOnce(null);
+    const user = {
+      id: '1',
+      first_name: 'Leonardo',
+      last_name: 'Santos',
+      email: 'leonardo@email.com',
+      created_at: new Date(),
+      updated_at: new Date(),
+    };
+
+    listOneUseCase.execute.mockResolvedValueOnce(user);
 
     const res = createMockRes();
     const req = {
@@ -72,7 +81,7 @@ describe('Testing UsersController', () => {
     await usersController.SHOW(req, res as unknown as Response);
 
     expect(listOneUseCase.execute).toHaveBeenCalledWith('1', '1');
-    expect(res.json).toHaveBeenCalledWith(null);
+    expect(res.json).toHaveBeenCalledWith(user);
   });
 
   it('POST returns 201 and success message', async () => {

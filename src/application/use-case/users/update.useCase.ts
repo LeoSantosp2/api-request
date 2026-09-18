@@ -16,6 +16,12 @@ export class UpdateUseCase {
       );
     }
 
+    const userExists = await this.userRepository.listOne(id);
+
+    if (!userExists) {
+      throw new HttpError(404, 'Usuário não encontrado.');
+    }
+
     const userUpdated = {
       first_name: user.firstName.trim(),
       last_name: user.lastName.trim(),

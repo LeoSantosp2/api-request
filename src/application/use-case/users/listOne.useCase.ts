@@ -13,6 +13,12 @@ export class ListOneUseCase {
       );
     }
 
-    return await this.userRepository.listPublic(id);
+    const user = await this.userRepository.listPublic(id);
+
+    if (!user) {
+      throw new HttpError(404, 'Usuário não encontrado.');
+    }
+
+    return user;
   }
 }

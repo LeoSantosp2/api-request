@@ -13,6 +13,12 @@ export class DeleteUseCase {
       );
     }
 
+    const userExists = await this.userRepository.listOne(id);
+
+    if (!userExists) {
+      throw new HttpError(404, 'Usuário não encontrado.');
+    }
+
     await this.userRepository.delete(id);
   }
 }
