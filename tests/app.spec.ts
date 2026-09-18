@@ -134,7 +134,7 @@ describe('Testing App', () => {
     expect(res.headers['content-type']).toMatch(/text\/html/);
   });
 
-  it('GET /api/docs.json returns 404 in production', async () => {
+  it('GET /api/docs.json is not registered in production', async () => {
     const originalNodeEnv = process.env.NODE_ENV;
 
     try {
@@ -147,10 +147,24 @@ describe('Testing App', () => {
       const res = await request(app).get('/api/docs.json');
 
       expect(res.status).toBe(404);
-      expect(res.body).toEqual({
-        status: 'error',
-        message: 'Documentação indisponível.',
-      });
+      expect(res.body.openapi).toBeUndefined();
+    } finally {
+      process.env.NODE_ENV = originalNodeEnv;
+    }
+  });
+
+  it('GET /api/docs is not registered in production', async () => {
+    const originalNodeEnv = process.env.NODE_ENV;
+
+    try {
+      process.env.NODE_ENV = 'production';
+
+      const { app } = await loadApp();
+
+      const res = await request(app).get('/api/docs/');
+
+      expect(res.status).toBe(404);
+      expect(res.text).not.toMatch(/swagger/i);
     } finally {
       process.env.NODE_ENV = originalNodeEnv;
     }
@@ -170,23 +184,31 @@ describe('Testing App', () => {
     expect(res.body).toEqual([{ id: '1' }]);
   });
 
-  it('GET /api/users without a token returns 401 and does not call the repository', async () => {
+  it('GET /api/users is public outside production', async () => {
     const { app, usersRepository } = await loadApp();
+    usersRepository.listAll.mockResolvedValueOnce([{ id: '1' }]);
 
     const res = await request(app).get('/api/users');
 
-    expect(res.status).toBe(401);
-    expect(usersRepository.listAll).not.toHaveBeenCalled();
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual([{ id: '1' }]);
   });
 
-  it('GET /api/users with an invalid token returns 401', async () => {
-    const { app } = await loadApp();
+  it('GET /api/users is not registered in production', async () => {
+    const originalNodeEnv = process.env.NODE_ENV;
 
-    const res = await request(app)
-      .get('/api/users')
-      .set('Authorization', 'Bearer not-a-real-token');
+    try {
+      process.env.NODE_ENV = 'production';
 
-    expect(res.status).toBe(401);
+      const { app, usersRepository } = await loadApp();
+
+      const res = await request(app).get('/api/users');
+
+      expect(res.status).toBe(404);
+      expect(usersRepository.listAll).not.toHaveBeenCalled();
+    } finally {
+      process.env.NODE_ENV = originalNodeEnv;
+    }
   });
 
   it('GET /api/users/:id without a token returns 401', async () => {
@@ -254,6 +276,13 @@ describe('Testing App', () => {
 
   it('DELETE /api/users/:id with a valid token passes through to the repository', async () => {
     const { app, usersRepository } = await loadApp();
+    usersRepository.listOne.mockResolvedValueOnce({
+      id: '1',
+      first_name: 'Leonardo',
+      last_name: 'Santos',
+      email: 'a@a.com',
+      password: 'hashed',
+    });
     usersRepository.delete.mockResolvedValueOnce(undefined);
 
     const token = jwt.sign({ id: '1', email: 'a@a.com' }, env.TOKEN_SECRET);

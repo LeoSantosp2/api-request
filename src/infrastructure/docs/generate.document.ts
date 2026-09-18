@@ -11,8 +11,6 @@ import './health';
 import './users';
 
 export const generateOpenApiDocument = () => {
-  if (env.NODE_ENV === 'production') return;
-
   const generator = new OpenApiGeneratorV3(registry.definitions);
 
   return generator.generateDocument({

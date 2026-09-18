@@ -13,7 +13,6 @@ import authRouter from './presentation/routes/auth.router';
 import { generateOpenApiDocument } from './infrastructure/docs/generate.document';
 
 import { errorHandler } from './presentation/middleware/error.handler';
-import { HttpError } from './presentation/utils/http.error';
 
 const corsOptions: CorsOptions = {
   origin: env.CORS_ORIGIN.split(',').map((origin) => origin.trim()),
@@ -55,21 +54,17 @@ class App {
     this.app.use('/api', usersRouter);
     this.app.use('/api', authRouter);
 
-    const openApiDocument = generateOpenApiDocument();
+    if (env.NODE_ENV !== 'production') {
+      const openApiDocument = generateOpenApiDocument();
 
-    this.app.get('/api/docs.json', (req, res) => {
-      if (!openApiDocument) {
-        throw new HttpError(404, 'Documentação indisponível.');
-      }
+      this.app.get('/api/docs.json', (req, res) => res.json(openApiDocument));
 
-      return res.json(openApiDocument);
-    });
-
-    this.app.use(
-      '/api/docs',
-      swaggerUi.serve,
-      swaggerUi.setup(openApiDocument),
-    );
+      this.app.use(
+        '/api/docs',
+        swaggerUi.serve,
+        swaggerUi.setup(openApiDocument),
+      );
+    }
   }
 }
 
