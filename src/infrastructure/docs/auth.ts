@@ -61,7 +61,7 @@ registry.registerPath({
       content: { 'application/json': { schema: errorResponseSchema } },
     },
     429: {
-      description: 'Muitas tentativas de login. Tente novamente mais tarde.',
+      description: 'Muitas tentativas. Tente novamente mais tarde.',
       content: { 'application/json': { schema: errorResponseSchema } },
     },
     500: internalErrorResponse,
@@ -74,7 +74,7 @@ registry.registerPath({
   tags: ['Auth'],
   summary: 'Renova o access token',
   description:
-    'Troca um refresh token válido por um novo access token e um novo refresh token. O refresh token enviado é revogado no processo (rotação), portanto só pode ser utilizado uma única vez. Rota pública, não requer autenticação.',
+    'Troca um refresh token válido por um novo access token e um novo refresh token. O refresh token enviado é revogado no processo (rotação), portanto só pode ser utilizado uma única vez. Rota pública, não requer autenticação. A rota é limitada a 5 tentativas a cada 15 minutos.',
   request: {
     body: {
       content: { 'application/json': { schema: refreshTokenSchema } },
@@ -92,6 +92,10 @@ registry.registerPath({
     },
     404: {
       description: 'Usuário inválido.',
+      content: { 'application/json': { schema: errorResponseSchema } },
+    },
+    429: {
+      description: 'Muitas tentativas. Tente novamente mais tarde.',
       content: { 'application/json': { schema: errorResponseSchema } },
     },
     500: internalErrorResponse,

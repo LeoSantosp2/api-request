@@ -34,6 +34,11 @@ const unauthorizedResponse = {
   content: { 'application/json': { schema: errorResponseSchema } },
 };
 
+const notFoundResponse = {
+  description: 'Usuário não encontrado.',
+  content: { 'application/json': { schema: errorResponseSchema } },
+};
+
 const idParam = z.object({
   id: z.string().openapi({ example: 'eddcdbb6-0294-4f0e-959c-fea84cd687c4' }),
 });
@@ -44,14 +49,12 @@ registry.registerPath({
   tags: ['Users'],
   summary: 'Retorna todos os usuários',
   description:
-    'Busca e retorna a lista completa de usuários cadastrados. Requer autenticação. Rota disponível apenas em desenvolvimento e teste, não é registrada em produção.',
-  security: [{ [bearerAuth.name]: [] }],
+    'Busca e retorna a lista completa de usuários cadastrados. Rota pública, não requer autenticação. Disponível apenas em desenvolvimento e teste, não é registrada em produção.',
   responses: {
     200: {
       description: 'Lista de usuários retornada com sucesso.',
       content: { 'application/json': { schema: z.array(userResponseSchema) } },
     },
-    401: unauthorizedResponse,
     500: internalErrorResponse,
   },
 });
@@ -62,17 +65,16 @@ registry.registerPath({
   tags: ['Users'],
   summary: 'Retorna um usuário',
   description:
-    'Busca e retorna um usuário. Requer autenticação e o usuário só pode consultar os próprios dados. Retorna `null` caso o registro não exista.',
+    'Busca e retorna um usuário. Requer autenticação e o usuário só pode consultar os próprios dados. A permissão é verificada antes da existência do registro, portanto um id de outro usuário retorna `403` mesmo que ele não exista.',
   security: [{ [bearerAuth.name]: [] }],
   request: {
     params: idParam,
   },
   responses: {
     200: {
-      description:
-        'Usuário retornado com sucesso, ou `null` caso não exista um registro com o id informado.',
+      description: 'Usuário retornado com sucesso.',
       content: {
-        'application/json': { schema: userResponseSchema.nullable() },
+        'application/json': { schema: userResponseSchema },
       },
     },
     401: unauthorizedResponse,
@@ -80,6 +82,7 @@ registry.registerPath({
       description: 'Sem permissão para listar este usuário.',
       content: { 'application/json': { schema: errorResponseSchema } },
     },
+    404: notFoundResponse,
     500: internalErrorResponse,
   },
 });
@@ -106,7 +109,7 @@ registry.registerPath({
       content: { 'application/json': { schema: errorResponseSchema } },
     },
     429: {
-      description: 'Muitas tentativas de cadastro. Tente novamente mais tarde.',
+      description: 'Muitas tentativas. Tente novamente mais tarde.',
       content: { 'application/json': { schema: errorResponseSchema } },
     },
     500: internalErrorResponse,
@@ -119,7 +122,7 @@ registry.registerPath({
   tags: ['Users'],
   summary: 'Atualiza um usuário',
   description:
-    'Atualiza o nome e o sobrenome de um usuário existente. Requer autenticação e o usuário só pode alterar os próprios dados.',
+    'Atualiza o nome e o sobrenome de um usuário existente. Requer autenticação e o usuário só pode alterar os próprios dados. A permissão é verificada antes da existência do registro, portanto um id de outro usuário retorna `403` mesmo que ele não exista.',
   security: [{ [bearerAuth.name]: [] }],
   request: {
     params: idParam,
@@ -140,6 +143,7 @@ registry.registerPath({
       description: 'Sem permissão para alterar este usuário.',
       content: { 'application/json': { schema: errorResponseSchema } },
     },
+    404: notFoundResponse,
     500: internalErrorResponse,
   },
 });
@@ -150,7 +154,7 @@ registry.registerPath({
   tags: ['Users'],
   summary: 'Deleta um usuário',
   description:
-    'Remove um usuário do sistema. Requer autenticação e o usuário só pode deletar a própria conta.',
+    'Remove um usuário do sistema. Requer autenticação e o usuário só pode deletar a própria conta. A permissão é verificada antes da existência do registro, portanto um id de outro usuário retorna `403` mesmo que ele não exista.',
   security: [{ [bearerAuth.name]: [] }],
   request: {
     params: idParam,
@@ -164,6 +168,7 @@ registry.registerPath({
       description: 'Sem permissão para deletar este usuário.',
       content: { 'application/json': { schema: errorResponseSchema } },
     },
+    404: notFoundResponse,
     500: internalErrorResponse,
   },
 });
