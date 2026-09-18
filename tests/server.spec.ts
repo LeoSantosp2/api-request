@@ -31,9 +31,39 @@ describe('Testing Server bootstrap', () => {
 
     await import('../src/server');
 
-    expect(listen).toHaveBeenCalledWith('3333', expect.any(Function));
+    expect(listen).toHaveBeenCalledWith(3333, expect.any(Function));
     expect(logSpy).toHaveBeenCalled();
     expect(fakeServer.on).toHaveBeenCalledWith('error', expect.any(Function));
+  });
+
+  it('falls back to port 3333 when API_PORT is not a number', async () => {
+    const fakeServer = { on: jest.fn(), close: jest.fn() };
+    const listen = jest.fn((_: unknown, cb?: () => void) => {
+      cb?.();
+      return fakeServer;
+    });
+
+    jest.doMock('../src/app', () => ({
+      __esModule: true,
+      default: { listen },
+    }));
+
+    jest.doMock('../src/infrastructure/config/env', () => ({
+      __esModule: true,
+      default: {
+        API_PORT: '',
+      },
+    }));
+
+    jest.doMock('../src/infrastructure/database/prisma.config', () => ({
+      prisma: { $disconnect: jest.fn() },
+    }));
+
+    jest.spyOn(console, 'log').mockImplementation(() => {});
+
+    await import('../src/server');
+
+    expect(listen).toHaveBeenCalledWith(3333, expect.any(Function));
   });
 
   it('logs a port-in-use message and exits on EADDRINUSE', async () => {

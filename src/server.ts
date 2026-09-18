@@ -6,7 +6,7 @@ import { prisma } from './infrastructure/database/prisma.config';
 
 import logger from './presentation/utils/logger';
 
-const PORT = env.API_PORT || 3333;
+const PORT = Number(env.API_PORT) || 3333;
 
 const server = app.listen(PORT, () => {
   logger.success(`server is running on PORT ${PORT} [${env.NODE_ENV}]`);
