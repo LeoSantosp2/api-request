@@ -36,7 +36,7 @@ Api-request is an example of API REST created with NodeJS and TypeScript. This p
 - ✅ Login system with email and password
 - ✅ Authentication with JWT (JSON Web Tokens)
 - ✅ Refresh tokens with rotation, revocation and logout
-- ✅ Rate limiting on the login and user registration endpoints
+- ✅ Rate limiting on the login, refresh token and user registration endpoints
 - ✅ Security headers with Helmet
 - ✅ Datas validation with Zod
 - ✅ Error handling
@@ -52,8 +52,8 @@ Api-request is an example of API REST created with NodeJS and TypeScript. This p
 
 ## Routes
 - URL base: `http://localhost:3333`
-- Endpoint docs: `http://localhost:3333/api/docs`
-- OpenAPI document (JSON): `http://localhost:3333/api/docs.json`
+- Endpoint docs: `http://localhost:3333/api/docs` (not available in production)
+- OpenAPI document (JSON): `http://localhost:3333/api/docs.json` (not available in production)
 
 ## Installation
 
@@ -184,14 +184,23 @@ CORS_ORIGIN=http://localhost:3000,http://localhost:3001
 To allow a different frontend origin, add it to the comma-separated list in `.env`.
 
 ### Environment-restricted routes
-`GET /api/users`, which lists every registered user, is only registered when `NODE_ENV` is `development` or `test`. In production the route is not mounted and responds `404 Not Found`. The per-user `GET /api/users/:id` is available in every environment.
+The following routes are only registered when `NODE_ENV` is `development` or `test`. In production they are not mounted and respond `404 Not Found`.
+
+| Route | Note |
+|-------|------|
+| `GET /api/users` | Lists every registered user. Public — it does **not** require a token, which is why it stays out of production |
+| `GET /api/docs` | Swagger UI |
+| `GET /api/docs.json` | OpenAPI document |
+
+The per-user `GET /api/users/:id` is available in every environment and requires authentication.
 
 ### Rate limiting
-Two endpoints are protected by `express-rate-limit`, each limited per IP. Exceeding a limit returns `429 Too Many Requests`.
+Three endpoints are protected by `express-rate-limit` through the shared `request.rate.limit.ts` middleware, each limited per IP. Exceeding a limit returns `429 Too Many Requests`.
 
 | Endpoint | Limit | Window |
 |----------|-------|--------|
 | `POST /api/auth/login` | 5 attempts | 15 minutes |
+| `POST /api/auth/refresh-token` | 5 attempts | 15 minutes |
 | `POST /api/users` | 5 attempts | 15 minutes |
 
 ### Database
@@ -210,6 +219,8 @@ The interactive documentation of the endpoints is available in:
 ```
 http://localhost:3333/api/docs
 ```
+
+Both `/api/docs` and `/api/docs.json` are only registered when `NODE_ENV` is `development` or `test`. In production the OpenAPI document is never built and both routes respond `404 Not Found`, so the API surface is not exposed.
 
 ## Authentication
 
@@ -269,7 +280,7 @@ curl -X POST http://localhost:3333/api/auth/logout \
 | 403 | Forbidden |
 | 404 | Not found |
 | 413 | Payload too large (JSON body over 1mb) |
-| 429 | Too many requests (login or registration rate limit exceeded) |
+| 429 | Too many requests (rate limit exceeded) |
 | 500 | Internal server error |
 
 ## Execute the Project
@@ -377,8 +388,7 @@ npm start
 │       ├── middleware/
 │       │   ├── error.handler.ts
 │       │   ├── login.required.ts
-│       │   ├── login.rate.limit.ts
-│       │   ├── register.rate.limit.ts
+│       │   ├── request.rate.limit.ts
 │       │   └── validate.body.ts
 │       └── utils/
 │           ├── tokens.ts                # Access token signing, refresh token generation/hashing
