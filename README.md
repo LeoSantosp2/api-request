@@ -60,6 +60,7 @@ Api-request is an example of API REST created with NodeJS and TypeScript. This p
 ### 1. Clone this repository
 ```bash
 git clone https://github.com/LeoSantosp2/api-request.git
+
 cd api-request
 ```
 
@@ -99,7 +100,7 @@ DATABASE_USERNAME=user
 DATABASE_PASSWORD=password
 DATABASE_URL="mysql://username:password@127.0.0.1:3306/database"
 
-# LOGIN CONFIGURATIONS
+# AUTH CONFIGURATIONS
 TOKEN_SECRET=your_secret_key
 TOKEN_EXPIRATION=15m
 REFRESH_TOKEN_EXPIRATION=7
@@ -294,6 +295,7 @@ npm run dev
 This command uses **Nodemon** to automatically restart when code changes.
 
 **Success:**
+
 ![DevSuccess](./assets/dev-success.png)
 
 The API is available in `http://localhost:3333`
@@ -328,6 +330,7 @@ npm start
 ```
 
 **Success:**
+
 ![ProdSuccess](./assets/prod-success.png)
 
 ## Project Structure
@@ -340,7 +343,7 @@ npm start
 ├── src/
 │   ├── app.ts          # Express configuration, routers and Swagger mount
 │   ├── server.ts       # Server initiator
-│   ├── domain/          # Entities, Zod schemas and repository contracts
+│   ├── domain/          # Entities, Zod schemas, repository contracts and errors
 │   │   ├── entities/
 │   │   │   ├── users.entity.ts          # User types + UserRepository interface
 │   │   │   └── refresh.token.entity.ts  # RefreshToken types + RefreshTokenRepository interface
@@ -348,8 +351,10 @@ npm start
 │   │   │   ├── login.schema.ts
 │   │   │   ├── user.schema.ts
 │   │   │   └── refresh.token.schema.ts
-│   │   └── interfaces/
-│   │       └── request.props.ts         # Typed Express request (body, params, userId)
+│   │   ├── interfaces/
+│   │   │   └── request.props.ts         # Typed Express request (body, params, userId)
+│   │   └── errors/
+│   │       └── http.error.ts            # HttpError base + BadRequest, Unauthorized, Forbidden, NotFound, TooManyRequests
 │   ├── application/     # Use cases (business logic), one class per action
 │   │   └── use-case/
 │   │       ├── auth/
@@ -394,7 +399,6 @@ npm start
 │           ├── tokens.ts                # Access token signing, refresh token generation/hashing
 │           ├── hash.password.ts
 │           ├── compare.password.ts
-│           ├── http.error.ts
 │           └── logger.ts
 ├── tests/              # Jest tests, mirroring the src/ layers
 ├── tsconfig.json       # TypeScript config
@@ -408,10 +412,10 @@ npm start
 
 The project follows a **Clean Architecture** style, split into four layers by responsibility: `domain` → `application` → `infrastructure` → `presentation`. Dependencies point inward: the presentation layer depends on application/domain, and infrastructure implements the contracts defined in the domain — never the other way around.
 
-- **Domain** (`src/domain/`): Entities, repository interfaces (`UserRepository`, `RefreshTokenRepository`) and Zod validation schemas. Framework-agnostic.
+- **Domain** (`src/domain/`): Entities, repository interfaces (`UserRepository`, `RefreshTokenRepository`), Zod validation schemas and the HTTP error classes (`HttpError` and its subclasses `BadRequest`, `Unauthorized`, `Forbidden`, `NotFound`, `TooManyRequests`). Framework-agnostic.
 - **Application** (`src/application/use-case/`): Use cases — one class per action (`CreateUseCase`, `LoginUseCase`, `RefreshTokenUseCase`, ...) — holding the business logic, including the ownership checks on `/api/users/:id`. Depends only on domain interfaces, receiving the repositories via constructor injection.
 - **Infrastructure** (`src/infrastructure/`): Concrete implementations of the domain contracts (`PrismaUsersRepository`, `PrismaRefreshTokenRepository`), the shared Prisma client, the validated environment config and the OpenAPI document.
-- **Presentation** (`src/presentation/`): HTTP layer — `routes/` define the endpoints and wire controllers to their use cases; `controllers/` read `req`, call the corresponding use case and send `res`; `middleware/` holds the cross-cutting functions (authentication, rate limiting, body validation, error handling); `utils/` holds the token, hashing and error helpers.
+- **Presentation** (`src/presentation/`): HTTP layer — `routes/` define the endpoints and wire controllers to their use cases; `controllers/` read `req`, call the corresponding use case and send `res`; `middleware/` holds the cross-cutting functions (authentication, rate limiting, body validation, error handling); `utils/` holds the token, hashing and logging helpers.
 
 ### File naming
 
@@ -429,4 +433,4 @@ This project is licensed under the [License MIT](./LICENSE).
 
 **Developed by:** [LeoSantosp2](https://github.com/LeoSantosp2)
 
-**Last update:** September 2026
+**Last update:** October 2026
