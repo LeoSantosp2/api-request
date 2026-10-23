@@ -1,7 +1,7 @@
 import express from 'express';
 import request from 'supertest';
 
-import { HttpError } from '../../../src/presentation/utils/http.error';
+import { HttpError } from '../../../src/domain/errors/http.error';
 import { requestRateLimit } from '../../../src/presentation/middleware/request.rate.limit';
 
 const buildApp = () => {

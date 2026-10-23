@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { HttpError } from '../utils/http.error';
+import { HttpError } from '../../domain/errors/http.error';
 
 interface BodyParserError extends Error {
   type?: string;

@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { Request, Response } from 'express';
 
 import { validateBody } from '../../../src/presentation/middleware/validate.body';
-import { HttpError } from '../../../src/presentation/utils/http.error';
+import { HttpError } from '../../../src/domain/errors/http.error';
 
 describe('Validate Body Middleware', () => {
   const schema = z.object({

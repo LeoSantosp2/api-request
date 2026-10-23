@@ -3,7 +3,7 @@ import { mock, MockProxy } from 'jest-mock-extended';
 import { LoginUseCase } from '../../../../src/application/use-case/auth/login.useCase';
 import { UserRepository } from '../../../../src/domain/entities/users.entity';
 import { RefreshTokenRepository } from '../../../../src/domain/entities/refresh.token.entity';
-import { HttpError } from '../../../../src/presentation/utils/http.error';
+import { HttpError } from '../../../../src/domain/errors/http.error';
 
 jest.mock('../../../../src/presentation/utils/compare.password', () => ({
   comparePassword: jest.fn(),

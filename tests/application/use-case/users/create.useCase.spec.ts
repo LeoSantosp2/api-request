@@ -2,7 +2,7 @@ import { mock, MockProxy } from 'jest-mock-extended';
 
 import { CreateUseCase } from '../../../../src/application/use-case/users/create.useCase';
 import { UserRepository } from '../../../../src/domain/entities/users.entity';
-import { HttpError } from '../../../../src/presentation/utils/http.error';
+import { HttpError } from '../../../../src/domain/errors/http.error';
 
 jest.mock('uuid', () => ({
   v4: () => 'fixed-uuid',

@@ -3,23 +3,20 @@ import {
   UpdateRequestUserData,
 } from '../../../domain/entities/users.entity';
 
-import { HttpError } from '../../../presentation/utils/http.error';
+import { Forbidden, NotFound } from '../../../domain/errors/http.error';
 
 export class UpdateUseCase {
   constructor(protected readonly userRepository: UserRepository) {}
 
   async execute(id: string, user: UpdateRequestUserData, userId?: string) {
     if (id !== userId) {
-      throw new HttpError(
-        403,
-        'Você não tem permissão para editar este usuário.',
-      );
+      throw new Forbidden('Você não tem permissão para editar este usuário.');
     }
 
     const userExists = await this.userRepository.listOne(id);
 
     if (!userExists) {
-      throw new HttpError(404, 'Usuário não encontrado.');
+      throw new NotFound('Usuário não encontrado.');
     }
 
     const userUpdated = {

@@ -3,7 +3,7 @@ import { v4 } from 'uuid';
 import { RefreshTokenRepository } from '../../../domain/entities/refresh.token.entity';
 import { UserRepository } from '../../../domain/entities/users.entity';
 
-import { HttpError } from '../../../presentation/utils/http.error';
+import { Unauthorized, NotFound } from '../../../domain/errors/http.error';
 import {
   generateRefreshToken,
   generateAccessToken,
@@ -23,17 +23,17 @@ export class RefreshTokenUseCase {
     );
 
     if (!storedToken) {
-      throw new HttpError(401, 'Refresh token inválido.');
+      throw new Unauthorized('Refresh token inválido.');
     }
 
     if (storedToken.revoked_at || storedToken.expires_at <= new Date()) {
-      throw new HttpError(401, 'Refresh token expirado.');
+      throw new Unauthorized('Refresh token expirado.');
     }
 
     const user = await this.userRepository.listOne(storedToken.user_id);
 
     if (!user) {
-      throw new HttpError(404, 'Usuário inválido.');
+      throw new NotFound('Usuário inválido.');
     }
 
     await this.refreshTokenRepository.revoke(hashToken(refreshToken));

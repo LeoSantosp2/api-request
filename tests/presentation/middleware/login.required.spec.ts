@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 
 import env from '../../../src/infrastructure/config/env';
 import { loginRequired } from '../../../src/presentation/middleware/login.required';
-import { HttpError } from '../../../src/presentation/utils/http.error';
+import { HttpError } from '../../../src/domain/errors/http.error';
 import { RequestProps } from '../../../src/domain/interfaces/request.props';
 
 describe('Login Required Middleware', () => {

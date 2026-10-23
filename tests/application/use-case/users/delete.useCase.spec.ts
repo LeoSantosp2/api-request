@@ -5,7 +5,7 @@ import {
   User,
   UserRepository,
 } from '../../../../src/domain/entities/users.entity';
-import { HttpError } from '../../../../src/presentation/utils/http.error';
+import { HttpError } from '../../../../src/domain/errors/http.error';
 
 const existingUser: User = {
   id: '1',

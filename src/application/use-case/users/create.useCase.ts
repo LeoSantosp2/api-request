@@ -5,7 +5,7 @@ import {
   CreateUserRequestData,
 } from '../../../domain/entities/users.entity';
 
-import { HttpError } from '../../../presentation/utils/http.error';
+import { BadRequest } from '../../../domain/errors/http.error';
 import { hashPassword } from '../../../presentation/utils/hash.password';
 
 export class CreateUseCase {
@@ -15,7 +15,7 @@ export class CreateUseCase {
     const emailExists = await this.userRepository.showByEmail(user.email);
 
     if (emailExists) {
-      throw new HttpError(400, 'Dados inválidos.');
+      throw new BadRequest('Dados inválidos.');
     }
 
     const newUser = {

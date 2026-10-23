@@ -1,7 +1,7 @@
 import { RefreshTokenRepository } from '../../../domain/entities/refresh.token.entity';
 import { UserRepository } from '../../../domain/entities/users.entity';
-import { HttpError } from '../../../presentation/utils/http.error';
 
+import { Unauthorized } from '../../../domain/errors/http.error';
 import { hashToken } from '../../../presentation/utils/tokens';
 
 export class LogoutUseCase {
@@ -16,13 +16,13 @@ export class LogoutUseCase {
     );
 
     if (!storedToken) {
-      throw new HttpError(401, 'Token inválido.');
+      throw new Unauthorized('Token inválido.');
     }
 
     const user = await this.userRepository.listOne(storedToken.user_id);
 
     if (!user) {
-      throw new HttpError(401, 'Token inválido.');
+      throw new Unauthorized('Token inválido.');
     }
 
     await this.refreshTokenRepository.revoke(hashToken(refreshToken));

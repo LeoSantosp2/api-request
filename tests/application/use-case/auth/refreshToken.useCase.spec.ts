@@ -6,7 +6,7 @@ import {
   RefreshToken,
   RefreshTokenRepository,
 } from '../../../../src/domain/entities/refresh.token.entity';
-import { HttpError } from '../../../../src/presentation/utils/http.error';
+import { HttpError } from '../../../../src/domain/errors/http.error';
 
 jest.mock('../../../../src/presentation/utils/tokens', () => ({
   generateAccessToken: jest.fn(),
