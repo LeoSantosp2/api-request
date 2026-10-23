@@ -1,5 +1,12 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { HttpError } from '../../../src/presentation/utils/http.error';
+import {
+  HttpError,
+  BadRequest,
+  Unauthorized,
+  Forbidden,
+  NotFound,
+  TooManyRequests,
+} from '../../../src/domain/errors/http.error';
 
 describe('Testing HttpError class', () => {
   it('constructs with statusCode and message', () => {
@@ -69,5 +76,24 @@ describe('Testing HttpError class', () => {
       expect(err.statusCode).toBe(422);
       expect(err.message).toBe('Unprocessable');
     }
+  });
+});
+
+describe('Testing HttpError subclasses', () => {
+  it.each([
+    [BadRequest, 400],
+    [Unauthorized, 401],
+    [Forbidden, 403],
+    [NotFound, 404],
+    [TooManyRequests, 429],
+  ])('%p sets status %i and extends HttpError', (ErrorClass, statusCode) => {
+    const err = new ErrorClass('message');
+
+    expect(err).toBeInstanceOf(ErrorClass);
+    expect(err).toBeInstanceOf(HttpError);
+    expect(err).toBeInstanceOf(Error);
+    expect(err.statusCode).toBe(statusCode);
+    expect(err.message).toBe('message');
+    expect(err.isOperational).toBe(true);
   });
 });
