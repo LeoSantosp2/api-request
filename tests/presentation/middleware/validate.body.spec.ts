@@ -22,7 +22,13 @@ describe('Validate Body Middleware', () => {
     } catch (error) {
       expect(error).toBeInstanceOf(HttpError);
       expect(error).toMatchObject({ statusCode: 400 });
-      expect(error).toHaveProperty('message', 'Nome é obrigatório.');
+      expect(error).toHaveProperty('message', 'Erro de validação.');
+      expect(error).toHaveProperty('details', [
+        expect.objectContaining({
+          path: ['name'],
+          message: 'Nome é obrigatório.',
+        }),
+      ]);
     }
   });
 
