@@ -20,8 +20,8 @@ export class CreateUseCase {
 
     const newUser = {
       id: v4(),
-      first_name: user.firstName.trim(),
-      last_name: user.lastName.trim(),
+      first_name: user.firstName,
+      last_name: user.lastName,
       email: user.email,
       password: hashPassword(user.password, 8),
     };

@@ -24,8 +24,8 @@ export class UpdateUseCase {
     }
 
     const userUpdated = {
-      first_name: user.firstName.trim(),
-      last_name: user.lastName.trim(),
+      first_name: user.firstName,
+      last_name: user.lastName,
     };
 
     await this.userRepository.update(id, userUpdated);

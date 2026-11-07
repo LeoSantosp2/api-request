@@ -3,14 +3,15 @@ import isEmail from 'validator/lib/isEmail';
 
 export const userRequestSchema = z
   .object({
-    firstName: z.string().min(1, 'Os campos não podem estar vazios.'),
-    lastName: z.string().min(1, 'Os campos não podem estar vazios.'),
+    firstName: z.string().trim().min(1, 'O nome não pode estar vazio.'),
+    lastName: z.string().trim().min(1, 'O sobrenome não pode estar vazio.'),
     email: z
       .string()
-      .min(1, 'Os campos não podem estar vazios.')
+      .trim()
+      .min(1, 'O e-mail não pode estar vazio.')
       .refine(isEmail, 'E-mail inválido.'),
-    password: z.string().min(1, 'Os campos não podem estar vazios.'),
-    confirmPassword: z.string().min(1, 'Os campos não podem estar vazios.'),
+    password: z.string().min(1, 'A senha não pode estar vazia.'),
+    confirmPassword: z.string().min(1, 'Confirmar senha não pode estar vazio.'),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: 'As senhas devem ser iguais.',
@@ -25,6 +26,6 @@ export const userRequestSchema = z
   );
 
 export const updateRequestSchema = z.object({
-  firstName: z.string().min(1, 'Os campos não podem estar vazios.'),
-  lastName: z.string().min(1, 'Os campos não podem estar vazios.'),
+  firstName: z.string().trim().min(1, 'O nome não pode estar vazio.'),
+  lastName: z.string().trim().min(1, 'O sobrenome não pode estar vazio.'),
 });
