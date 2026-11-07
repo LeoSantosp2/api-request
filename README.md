@@ -12,6 +12,7 @@ An API example created with NodeJS and TypeScript for a complete CRUD model of u
 - [Configuration](#configuration)
 - [Authentication](#authentication)
 - [Execute the Project](#execute-the-project)
+- [Build to production](#build-to-production)
 - [Project Structure](#project-structure)
 - [Contribution](#contribution)
 - [License](#license)
@@ -67,8 +68,6 @@ cd api-request
 ### 2. Install the packages
 ```bash
 npm install
-# or
-yarn install
 ```
 
 ### 3. Configure the environment variables
@@ -117,7 +116,7 @@ REFRESH_TOKEN_EXPIRATION=7
 | `DATABASE_PORT` | MySQL port | `3306` |
 | `DATABASE_USERNAME` | MySQL username | `user` |
 | `DATABASE_PASSWORD` | MySQL user password | `password` |
-| `DATABASE_URL` | URL prisma connection | `mysql://username:password:3306/db_name` |
+| `DATABASE_URL` | URL prisma connection | `mysql://username:password@127.0.0.1:3306/db_name` |
 | `TOKEN_SECRET` | Secret key to JWT | Random safe string |
 | `TOKEN_EXPIRATION` | Access token expiration time | `15m`, `24h`, `7d` |
 | `REFRESH_TOKEN_EXPIRATION` | Refresh token expiration, **in days** | `7` |
@@ -157,26 +156,26 @@ npm run test:watch
 npm run test:coverage
 ```
 
-> Current coverage (latest local run): **97.58% statements**, **94% branches**, **98.55% functions**, **98.05% lines**.
+> Current coverage: **98.09% statements**, **98.63% branches**, **98.71% functions**, **98.26% lines**.
 
 ## Configuration
 
 ### Security headers
 Responses go through [`helmet`](https://www.npmjs.com/package/helmet), which sets the usual hardening headers — `Content-Security-Policy`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`, `X-Frame-Options: SAMEORIGIN`, `Cross-Origin-Opener-Policy`, `Cross-Origin-Resource-Policy`, among others.
 
-HSTS is disabled in helmet (`hsts: false`) and sent by a small middleware only when the request actually arrives over HTTPS (`req.secure`), so local HTTP development is not forced onto `https://`:
+HSTS is enabled through helmet **only when `NODE_ENV` is `production`**, so local HTTP development is not forced onto `https://`:
 
 ```
 Strict-Transport-Security: max-age=31536000; includeSubDomains
 ```
 
-> Behind a reverse proxy (Nginx, Heroku, Render, ...), `req.secure` is only true if Express is told to trust the proxy. Without `app.set('trust proxy', 1)` the HSTS header will not be sent in production.
+> In production the app also sets `app.set('trust proxy', 1)`, so it works correctly behind a reverse proxy (Nginx, Heroku, Render, ...) — e.g. rate limiting uses the client IP instead of the proxy's.
 
 ### Request body limit
 JSON bodies are limited to **1mb** (`express.json({ limit: '1mb' })`). Oversized payloads are rejected before reaching a route with `413 Payload Too Large`, and malformed JSON with `400 Bad Request` — both normalized by `error.handler.ts`, which answers with the standard error body and never leaks the body-parser internal message.
 
 ### CORS
-The API only accepts cross-origin requests from allowed origins, configured through the `CORS_ORIGIN` environment variable (see [Configuration](#configuration) table above):
+The API only accepts cross-origin requests from allowed origins, configured through the `CORS_ORIGIN` environment variable (see the [variables description](#variables-description) table above):
 
 ```env
 CORS_ORIGIN=http://localhost:3000,http://localhost:3001
@@ -210,7 +209,7 @@ The project use prisma ORM. The schema of the database is in `prisma/schema.pris
 **Created tables:**
 - `users` - Users datas
 - `refresh_token` - Refresh tokens issued at login (hashed), with expiration and revocation date. Tied to `users` with `onDelete: Cascade`
-- `prisma_migrations` - migrations history
+- `_prisma_migrations` - migrations history
 
 ### Swagger/Documentation
 
@@ -276,13 +275,33 @@ curl -X POST http://localhost:3333/api/auth/logout \
 ### Error status codes
 | Code | Description |
 |--------|-----------|
-| 400 | Bad request (Missing or invalid data) |
-| 401 | Unauthorized (Missing or invalid token) |
-| 403 | Forbidden |
+| 400 | Bad request (Missing or invalid data, malformed JSON or email already registered) |
+| 401 | Unauthorized (Missing or invalid token, invalid credentials or invalid refresh token) |
+| 403 | Forbidden (Trying to read, update or delete another user) |
 | 404 | Not found |
 | 413 | Payload too large (JSON body over 1mb) |
 | 429 | Too many requests (rate limit exceeded) |
 | 500 | Internal server error |
+
+### Error response body
+Every error is normalized by `error.handler.ts` into the same body. `details` is only filled on validation errors, carrying the Zod issues for each invalid field:
+
+```json
+{
+  "status": "error",
+  "message": "Erro de validação.",
+  "details": [
+    {
+      "origin": "string",
+      "code": "too_small",
+      "minimum": 1,
+      "inclusive": true,
+      "path": ["firstName"],
+      "message": "O nome não pode estar vazio."
+    }
+  ]
+}
+```
 
 ## Execute the Project
 
@@ -354,7 +373,7 @@ npm start
 │   │   ├── interfaces/
 │   │   │   └── request.props.ts         # Typed Express request (body, params, userId)
 │   │   └── errors/
-│   │       └── http.error.ts            # HttpError base + BadRequest, Unauthorized, Forbidden, NotFound, TooManyRequests
+│   │       └── http.error.ts            # HttpError base + BadRequestError, UnauthorizedError, ForbiddenError, NotFoundError, PayloadTooLargeError, TooManyRequestsError, InternalServerError
 │   ├── application/     # Use cases (business logic), one class per action
 │   │   └── use-case/
 │   │       ├── auth/
@@ -381,6 +400,7 @@ npm start
 │   │       ├── auth.ts                  # /api/auth/* OpenAPI paths
 │   │       ├── users.ts                 # /api/users OpenAPI paths
 │   │       ├── health.ts                # /api/health OpenAPI path
+│   │       ├── docs.ts                  # /api/docs.json OpenAPI path
 │   │       └── generate.document.ts     # Builds the final OpenAPI document
 │   └── presentation/    # HTTP layer
 │       ├── routes/
@@ -412,7 +432,7 @@ npm start
 
 The project follows a **Clean Architecture** style, split into four layers by responsibility: `domain` → `application` → `infrastructure` → `presentation`. Dependencies point inward: the presentation layer depends on application/domain, and infrastructure implements the contracts defined in the domain — never the other way around.
 
-- **Domain** (`src/domain/`): Entities, repository interfaces (`UserRepository`, `RefreshTokenRepository`), Zod validation schemas and the HTTP error classes (`HttpError` and its subclasses `BadRequest`, `Unauthorized`, `Forbidden`, `NotFound`, `TooManyRequests`). Framework-agnostic.
+- **Domain** (`src/domain/`): Entities, repository interfaces (`UserRepository`, `RefreshTokenRepository`), Zod validation schemas and the HTTP error classes (`HttpError` and its subclasses `BadRequestError`, `UnauthorizedError`, `ForbiddenError`, `NotFoundError`, `PayloadTooLargeError`, `TooManyRequestsError`, `InternalServerError`). Framework-agnostic.
 - **Application** (`src/application/use-case/`): Use cases — one class per action (`CreateUseCase`, `LoginUseCase`, `RefreshTokenUseCase`, ...) — holding the business logic, including the ownership checks on `/api/users/:id`. Depends only on domain interfaces, receiving the repositories via constructor injection.
 - **Infrastructure** (`src/infrastructure/`): Concrete implementations of the domain contracts (`PrismaUsersRepository`, `PrismaRefreshTokenRepository`), the shared Prisma client, the validated environment config and the OpenAPI document.
 - **Presentation** (`src/presentation/`): HTTP layer — `routes/` define the endpoints and wire controllers to their use cases; `controllers/` read `req`, call the corresponding use case and send `res`; `middleware/` holds the cross-cutting functions (authentication, rate limiting, body validation, error handling); `utils/` holds the token, hashing and logging helpers.
@@ -433,4 +453,4 @@ This project is licensed under the [License MIT](./LICENSE).
 
 **Developed by:** [LeoSantosp2](https://github.com/LeoSantosp2)
 
-**Last update:** October 2026
+**Last update:** November 2026
