@@ -18,6 +18,8 @@ const corsOptions: CorsOptions = {
   origin: env.CORS_ORIGIN.split(',').map((origin) => origin.trim()),
 };
 
+const isProduction = env.NODE_ENV === 'production';
+
 class App {
   public app: express.Application;
 
@@ -29,23 +31,19 @@ class App {
   }
 
   middlewares() {
-    if (env.NODE_ENV === 'production') {
+    if (isProduction) {
       this.app.set('trust proxy', 1);
     }
 
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(express.json({ limit: '1mb' }));
-    this.app.use(helmet({ hsts: false }));
-    this.app.use((req, res, next) => {
-      if (req.secure) {
-        res.setHeader(
-          'Strict-Transport-Security',
-          'max-age=31536000; includeSubDomains',
-        );
-      }
-
-      next();
-    });
+    this.app.use(
+      helmet({
+        hsts: isProduction
+          ? { maxAge: 31536000, includeSubDomains: true }
+          : false,
+      }),
+    );
     this.app.use(cors(corsOptions));
   }
 
