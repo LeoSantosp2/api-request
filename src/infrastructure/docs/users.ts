@@ -39,6 +39,11 @@ const notFoundResponse = {
   content: { 'application/json': { schema: errorResponseSchema } },
 };
 
+const payloadTooLargeResponse = {
+  description: 'Corpo da requisição excede o tamanho máximo permitido (1mb).',
+  content: { 'application/json': { schema: errorResponseSchema } },
+};
+
 const idParam = z.object({
   id: z.string().openapi({ example: 'eddcdbb6-0294-4f0e-959c-fea84cd687c4' }),
 });
@@ -105,9 +110,10 @@ registry.registerPath({
       content: { 'application/json': { schema: successMessageSchema } },
     },
     400: {
-      description: 'Dados inválidos ou email já cadastrado.',
+      description: 'Dados inválidos, JSON malformado ou email já cadastrado.',
       content: { 'application/json': { schema: errorResponseSchema } },
     },
+    413: payloadTooLargeResponse,
     429: {
       description: 'Muitas tentativas. Tente novamente mais tarde.',
       content: { 'application/json': { schema: errorResponseSchema } },
@@ -135,7 +141,7 @@ registry.registerPath({
       description: 'Usuário atualizado com sucesso.',
     },
     400: {
-      description: 'Dados inválidos.',
+      description: 'Dados inválidos ou JSON malformado.',
       content: { 'application/json': { schema: errorResponseSchema } },
     },
     401: unauthorizedResponse,
@@ -144,6 +150,7 @@ registry.registerPath({
       content: { 'application/json': { schema: errorResponseSchema } },
     },
     404: notFoundResponse,
+    413: payloadTooLargeResponse,
     500: internalErrorResponse,
   },
 });

@@ -34,7 +34,12 @@ const internalErrorResponse = {
 };
 
 const invalidDataResponse = {
-  description: 'Dados inválidos.',
+  description: 'Dados inválidos ou JSON malformado.',
+  content: { 'application/json': { schema: errorResponseSchema } },
+};
+
+const payloadTooLargeResponse = {
+  description: 'Corpo da requisição excede o tamanho máximo permitido (1mb).',
   content: { 'application/json': { schema: errorResponseSchema } },
 };
 
@@ -60,6 +65,7 @@ registry.registerPath({
       description: 'E-mail ou senha inválidos.',
       content: { 'application/json': { schema: errorResponseSchema } },
     },
+    413: payloadTooLargeResponse,
     429: {
       description: 'Muitas tentativas. Tente novamente mais tarde.',
       content: { 'application/json': { schema: errorResponseSchema } },
@@ -94,6 +100,7 @@ registry.registerPath({
       description: 'Usuário inválido.',
       content: { 'application/json': { schema: errorResponseSchema } },
     },
+    413: payloadTooLargeResponse,
     429: {
       description: 'Muitas tentativas. Tente novamente mais tarde.',
       content: { 'application/json': { schema: errorResponseSchema } },
@@ -123,6 +130,7 @@ registry.registerPath({
       description: 'Token inválido.',
       content: { 'application/json': { schema: errorResponseSchema } },
     },
+    413: payloadTooLargeResponse,
     500: internalErrorResponse,
   },
 });
