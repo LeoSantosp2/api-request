@@ -1,23 +1,31 @@
 import { Request, Response, NextFunction } from 'express';
-import { HttpError } from '../../domain/errors/http.error';
 
-interface BodyParserError extends Error {
-  type?: string;
+import {
+  HttpError,
+  BadRequestError,
+  PayloadTooLargeError,
+  InternalServerError,
+} from '../../domain/errors/http.error';
+
+function toHttpError(error: Error): HttpError {
+  if (error instanceof HttpError) return error;
+
+  if (
+    error instanceof SyntaxError &&
+    'type' in error &&
+    error.type === 'entity.parse.failed'
+  ) {
+    return new BadRequestError('JSON inválido.');
+  }
+
+  if ('type' in error && error.type === 'entity.too.large') {
+    return new PayloadTooLargeError(
+      'Corpo da requisição excede o tamanho máximo permitido.',
+    );
+  }
+
+  return new InternalServerError('Erro interno do servidor');
 }
-
-const bodyParserErrors: Record<
-  string,
-  { statusCode: number; message: string }
-> = {
-  'entity.too.large': {
-    statusCode: 413,
-    message: 'Corpo da requisição excede o tamanho máximo permitido.',
-  },
-  'entity.parse.failed': {
-    statusCode: 400,
-    message: 'JSON inválido.',
-  },
-};
 
 export function errorHandler(
   err: Error,
@@ -26,26 +34,15 @@ export function errorHandler(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   next: NextFunction,
 ): Response {
-  if (err instanceof HttpError) {
-    return res.status(err.statusCode).json({
-      status: 'error',
-      message: err.message,
-    });
+  const httpError = toHttpError(err);
+
+  if (httpError.statusCode === 500) {
+    console.error(err);
   }
 
-  const bodyParserError = bodyParserErrors[(err as BodyParserError).type ?? ''];
-
-  if (bodyParserError) {
-    return res.status(bodyParserError.statusCode).json({
-      status: 'error',
-      message: bodyParserError.message,
-    });
-  }
-
-  console.error(err);
-
-  return res.status(500).json({
+  return res.status(httpError.statusCode).json({
     status: 'error',
-    message: 'Erro interno do servidor',
+    message: httpError.message,
+    details: httpError.details,
   });
 }
