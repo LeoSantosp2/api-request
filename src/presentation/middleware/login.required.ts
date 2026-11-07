@@ -3,8 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 
 import env from '../../infrastructure/config/env';
 
-import { Unauthorized } from '../../domain/errors/http.error';
-
+import { UnauthorizedError } from '../../domain/errors/http.error';
 import { RequestProps } from '../../domain/interfaces/request.props';
 
 export const loginRequired = (
@@ -15,13 +14,13 @@ export const loginRequired = (
   const authHeader = req.headers.authorization;
 
   if (!authHeader) {
-    throw new Unauthorized('Necessário fazer login.');
+    throw new UnauthorizedError('Necessário fazer login.');
   }
 
   const [scheme, token] = authHeader.split(' ');
 
   if (scheme !== 'Bearer' || !token) {
-    throw new Unauthorized('Token inválido.');
+    throw new UnauthorizedError('Token inválido.');
   }
 
   try {
@@ -30,12 +29,12 @@ export const loginRequired = (
     });
 
     if (typeof payload === 'string' || !payload.id) {
-      throw new Unauthorized('Token inválido.');
+      throw new UnauthorizedError('Token inválido.');
     }
 
     (req as RequestProps).userId = payload.id;
   } catch {
-    throw new Unauthorized('Token expirado ou inválido.');
+    throw new UnauthorizedError('Token expirado ou inválido.');
   }
 
   return next();

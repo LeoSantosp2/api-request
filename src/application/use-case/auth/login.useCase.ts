@@ -2,8 +2,8 @@ import { v4 } from 'uuid';
 
 import { UserRepository } from '../../../domain/entities/users.entity';
 import { RefreshTokenRepository } from '../../../domain/entities/refresh.token.entity';
+import { UnauthorizedError } from '../../../domain/errors/http.error';
 
-import { Unauthorized } from '../../../domain/errors/http.error';
 import { comparePassword } from '../../../presentation/utils/compare.password';
 import {
   generateAccessToken,
@@ -22,7 +22,7 @@ export class LoginUseCase {
     const user = await this.userRepository.showByEmail(email);
 
     if (!user || !comparePassword(password, user.password)) {
-      throw new Unauthorized('E-mail ou senha inválidos.');
+      throw new UnauthorizedError('E-mail ou senha inválidos.');
     }
 
     const accessToken = generateAccessToken(user.id, user.email);
