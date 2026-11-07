@@ -8,7 +8,7 @@ export const validateBody =
     const result = schema.safeParse(req.body);
 
     if (!result.success) {
-      throw new BadRequestError('Erro de validação', result.error.issues);
+      throw new BadRequestError('Erro de validação.', result.error.issues);
     }
 
     req.body = result.data;
