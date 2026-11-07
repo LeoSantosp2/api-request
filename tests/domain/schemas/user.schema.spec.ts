@@ -1,4 +1,7 @@
-import { userRequestSchema } from '../../../src/domain/schemas/user.schema';
+import {
+  userRequestSchema,
+  updateRequestSchema,
+} from '../../../src/domain/schemas/user.schema';
 
 describe('User Request Schema', () => {
   const validBody = {
@@ -47,6 +50,27 @@ describe('User Request Schema', () => {
       ...validBody,
       password: '123',
       confirmPassword: '123',
+    });
+
+    expect(result.success).toBe(false);
+  });
+});
+
+describe('Update Request Schema', () => {
+  it('Should trim the name fields', () => {
+    const result = updateRequestSchema.safeParse({
+      firstName: '  New  ',
+      lastName: '  Name  ',
+    });
+
+    expect(result.success).toBe(true);
+    expect(result.data).toEqual({ firstName: 'New', lastName: 'Name' });
+  });
+
+  it('Should reject names that are only whitespace', () => {
+    const result = updateRequestSchema.safeParse({
+      firstName: '   ',
+      lastName: 'Name',
     });
 
     expect(result.success).toBe(false);

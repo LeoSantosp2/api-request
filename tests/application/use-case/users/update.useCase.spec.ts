@@ -91,19 +91,4 @@ describe('Testing UpdateUseCase', () => {
       last_name: 'Name',
     });
   });
-
-  it('Should trim the name fields before persisting', async () => {
-    userRepository.listOne.mockResolvedValueOnce(existingUser);
-
-    await updateUseCase.execute(
-      '1',
-      { firstName: '  New  ', lastName: '  Name  ' },
-      '1',
-    );
-
-    expect(userRepository.update).toHaveBeenCalledWith('1', {
-      first_name: 'New',
-      last_name: 'Name',
-    });
-  });
 });
