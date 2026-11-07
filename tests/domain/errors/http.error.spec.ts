@@ -1,11 +1,13 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import {
   HttpError,
-  BadRequest,
-  Unauthorized,
-  Forbidden,
-  NotFound,
-  TooManyRequests,
+  BadRequestError,
+  UnauthorizedError,
+  ForbiddenError,
+  NotFoundError,
+  PayloadTooLargeError,
+  TooManyRequestsError,
+  InternalServerError,
 } from '../../../src/domain/errors/http.error';
 
 describe('Testing HttpError class', () => {
@@ -81,11 +83,13 @@ describe('Testing HttpError class', () => {
 
 describe('Testing HttpError subclasses', () => {
   it.each([
-    [BadRequest, 400],
-    [Unauthorized, 401],
-    [Forbidden, 403],
-    [NotFound, 404],
-    [TooManyRequests, 429],
+    [BadRequestError, 400],
+    [UnauthorizedError, 401],
+    [ForbiddenError, 403],
+    [NotFoundError, 404],
+    [PayloadTooLargeError, 413],
+    [TooManyRequestsError, 429],
+    [InternalServerError, 500],
   ])('%p sets status %i and extends HttpError', (ErrorClass, statusCode) => {
     const err = new ErrorClass('message');
 
